@@ -1,22 +1,33 @@
 <!-- ACTIVITY SOLUTION START -->
 <script>
-    import CourseComponent from '../components/CourseComponent.vue';
-    import CourseComponent2 from '../components/CourseComponent2.vue';
-    import CourseComponent3 from '../components/CourseComponent3.vue';
-    import CourseComponent4 from '../components/CourseComponent4.vue';
-    import CourseComponent5 from '../components/CourseComponent5.vue';
-    import CourseComponent6 from '../components/CourseComponent6.vue';
+import coursesData from "../data/coursesData.js";
+import { ref, reactive, onMounted } from "vue";
+import CourseComponent from "../components/CourseComponent.vue";
+// import CourseComponent2 from "../components/CourseComponent2.vue";
+// import CourseComponent3 from "../components/CourseComponent3.vue";
+// import CourseComponent4 from "../components/CourseComponent4.vue";
+// import CourseComponent5 from "../components/CourseComponent5.vue";
+// import CourseComponent6 from "../components/CourseComponent6.vue";
 
-    export default {
-        components: {
-            CourseComponent,
-            CourseComponent2,
-            CourseComponent3,
-            CourseComponent4,
-            CourseComponent5,
-            CourseComponent6
-        }
-    }
+export default {
+    components: {
+        CourseComponent,
+        // CourseComponent2,
+        // CourseComponent3,
+        // CourseComponent4,
+        // CourseComponent5,
+        // CourseComponent6,
+    },
+    setup() {
+        const courses = reactive(coursesData).filter(
+            (course) => course.onOffer,
+        );
+        onMounted(() => {
+            console.log(courses);
+        });
+        return { courses };
+    },
+};
 </script>
 
 <template>
@@ -29,9 +40,13 @@
         </div>
         <div class="row g-4">
             <div class="col-md-4">
-                <CourseComponent />
+                <CourseComponent
+                    v-for="course in courses"
+                    :key="course.id"
+                    :courseData="courseData"
+                />
             </div>
-            <div class="col-md-4">
+            <!-- <div class="col-md-4">
                 <CourseComponent2 />
             </div>
             <div class="col-md-4">
@@ -45,7 +60,7 @@
             </div>
             <div class="col-md-4">
                 <CourseComponent6 />
-            </div>
+            </div> -->
         </div>
     </div>
 </template>

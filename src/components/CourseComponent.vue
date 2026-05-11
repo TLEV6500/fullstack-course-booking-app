@@ -1,16 +1,21 @@
+<script setup>
+defineProps({
+    courseData: {
+        type: Object,
+        required: true,
+    },
+});
+</script>
+
 <!-- ACTIVITY SOLUTION START -->
 <template>
     <div id="CourseCard" class="card p-2 h-100">
         <div class="card-body">
-            <h4 class="card-title">
-                Course 1
-            </h4>
+            <h4 class="card-title">{{ courseData.title }}</h4>
             <p class="card-text mt-3">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo cumque deserunt, vitae quidem facere amet molestiae nostrum! Quia est, inventore tenetur, quas, corporis quam adipisci accusamus laudantium enim libero saepe.
+                {{ courseData.description }}
             </p>
-            <p>
-                Price: PHP 2000
-            </p>
+            <p>Price: PHP {{ courseData.price }}</p>
             <button class="btn btn-outline-primary">Enroll</button>
         </div>
     </div>

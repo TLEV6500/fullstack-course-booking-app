@@ -1,20 +1,28 @@
 <!-- ACTIVITY SOLUTION START -->
 <script>
-  import BannerComponent from '../components/BannerComponent.vue';
-  import HighlightsComponent from '../components/HighlightsComponent.vue';
+import BannerComponent from "../components/BannerComponent.vue";
+import HighlightsComponent from "../components/HighlightsComponent.vue";
 
-  export default {
+export default {
     components: {
-      BannerComponent,
-      HighlightsComponent
-    }
-  }
+        BannerComponent,
+        HighlightsComponent,
+    },
+    data() {
+        return {
+            bannerProps: {
+                title: "Zuitt Course Booking System",
+                tagline: "Opportunities for everyone, everywhere",
+            },
+        };
+    },
+};
 </script>
 
 <template>
-  <div class="container-fluid">
-    <BannerComponent />
-    <HighlightsComponent />
-  </div>
+    <div class="container-fluid">
+        <BannerComponent :bannerProps="bannerProps" />
+        <HighlightsComponent />
+    </div>
 </template>
 <!-- ACTIVITY SOLUTION END -->
