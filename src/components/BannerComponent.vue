@@ -1,5 +1,6 @@
-<!--
-  What is a component?
+
+<!-- 
+  What is a component? 
     A component is a reusable part of an application.
 
   What is a VueJS Component?
@@ -15,39 +16,44 @@
 <!-- Each SFC block consists of HTML-like tags that encapsulates the block. They can be in any order. -->
 
 <script>
-export default {
-    name: "BannerComponent",
+ /*Script: A block of JavaScript code that defines the behavior and logic of the component.*/
+  export default {
     props: {
-        bannerProps: Object,
+      bannerProps: Object
     },
-};
+    mounted() {
+      console.log(this.title);
+      console.log(this.tagline);
+    }
+
+  }
 </script>
 
 <template>
-    <!-- Template: A block of HTML-like code that defines the structure of the component. -->
-    <div class="container-fluid">
-        <div class="row mb-5 py-5" id="banner">
-            <div class="col-md-10 p-5 ms-5">
-                <h1 class="mb-3" id="banner-title">
-                    {{ bannerProps.title }}
-                </h1>
-                <p class="mb-5" id="motto">
-                    {{ bannerProps.tagline }}
-                </p>
-                <a class="btn btn-primary btn-lg rounded-pill px-3"
-                    >View Our Courses! <i class="bi bi-arrow-right"></i
-                ></a>
-            </div>
-        </div>
+<!-- Template: A block of HTML-like code that defines the structure of the component. -->
+  <div class="container-fluid">
+    <div class="row mb-5 py-5" id="banner">
+      <div class="col-md-10 p-5 ms-5">
+        <h1 class="mb-3" id="banner-title">{{bannerProps.title}}</h1>
+        <p class="mb-5" id="motto">
+          {{bannerProps.tagline}}
+        </p>
+<!-- ACTIVITY SOLUTION START -->
+        <router-link class="btn btn-primary btn-lg rounded-pill px-3" :to="{ name: bannerProps.destination }">{{bannerProps.buttonLabel}} <i class="bi bi-arrow-right"></i></router-link>
+        <!-- ACTIVITY SOLUTION END -->
+      </div>
     </div>
+  </div>
+
 </template>
 
 <style scoped>
-/*Style: A block of CSS code that defines the styling of the component. */
-h1 {
+  /*Style: A block of CSS code that defines the styling of the component. */
+  h1 {
     font-family: serif;
     font-style: normal;
     font-weight: 700;
     font-size: 48px;
-}
+  }
+
 </style>
