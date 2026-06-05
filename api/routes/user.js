@@ -1,6 +1,6 @@
 const express = require("express");
 const userController = require("../controllers/user");
-const { verify } = require("../auth");
+const { verifyToken } = require("../auth");
 
 const router = express.Router();
 
@@ -22,16 +22,16 @@ router.post("/login", userController.loginUser);
 /**
  *  @openapi
  */
-router.get("/details", verify, userController.getProfile);
+router.get("/details", verifyToken, userController.getProfile);
 
 /**
  *  @openapi
  */
-router.post("/reset-password", verify, userController.resetPassword);
+router.post("/reset-password", verifyToken, userController.resetPassword);
 
 /**
  *  @openapi
  */
-router.put("/profile", verify, userController.updateProfile);
+router.put("/profile", verifyToken, userController.updateProfile);
 
 module.exports = router;

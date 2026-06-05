@@ -1,40 +1,31 @@
 const Enrollment = require("../models/Enrollment");
-const { errorHandler } = require('../auth');
+const { errorHandler } = require("../auth");
 
-module.exports.enroll = (req, res) => {
-
-    if(req.user.isAdmin){
-
-        return res.status(403).send({ message: 'Admin is forbidden' });
+module.exports.enroll = async (req, res) => {
+    if (req.user.isAdmin) {
+        return res.status(403).send({ message: "Admin cannot enroll" });
     }
 
-    let newEnrollment = new Enrollment ({
-        userId : req.user.id,
+    let newEnrollment = new Enrollment({
+        userId: req.user.id,
         enrolledCourses: req.body.enrolledCourses,
-        totalPrice: req.body.totalPrice
-    })
+        totalPrice: req.body.totalPrice,
+    });
 
-    return newEnrollment.save()
-    .then(enrolled => {
-        return res.status(201).send({
-            success: true,
-            message: 'Enrolled successfully'
-        });
-    })
-    .catch(error => errorHandler(error, req, res));
-    
-}
+    await newEnrollment.save();
 
-module.exports.getEnrollments = (req, res) => {
-    return Enrollment.find({userId : req.user.id})
-    .then(enrollments => {
+    return res.status(201).send({
+        success: true,
+        message: "Enrolled successfully",
+    });
+};
 
-        if (enrollments.length > 0) {
+module.exports.getEnrollments = async (req, res) => {
+    const enrollments = await Enrollment.find({ userId: req.user.id });
 
-            return res.status(200).send(enrollments);
-        }
+    if (enrollments.length > 0) {
+        return res.status(200).send(enrollments);
+    }
 
-        return res.status(404).send({ message: 'No enrolled courses' });
-    })
-    .catch(error => errorHandler(error, req, res));
+    return res.status(404).send({ message: "No enrolled courses" });
 };

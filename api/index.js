@@ -5,15 +5,20 @@ const swaggerUi = require("swagger-ui-express");
 const userRoutes = require("./routes/user");
 const courseRoutes = require("./routes/course");
 const enrollmentRoutes = require("./routes/enrollment");
-
+const logErrors = require("./middlewares/error");
 require("dotenv").config();
+
+if (!process.env.ALLOWED_ORIGINS || !process.env.NODE_ENV)
+    throw new Error(
+        "Environmental variables ALLOWED_ORIGINS and NODE_ENV must be set.",
+    );
 
 const app = express();
 
 app.use(express.json());
 
 const corsOptions = {
-    origin: ["http://localhost:8000", "http://localhost:5173"],
+    origin: JSON.parse(process.env.ALLOWED_ORIGINS)[process.env.NODE_ENV],
     credentials: true,
     optionsSuccessStatus: 200,
 };
@@ -30,6 +35,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/users", userRoutes);
 app.use("/courses", courseRoutes);
 app.use("/enrollments", enrollmentRoutes);
+app.use(logErrors);
 
 if (require.main === module) {
     app.listen(process.env.PORT || 3000, () => {

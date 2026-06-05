@@ -1,137 +1,94 @@
-const User = require('../models/User');
-const bcrypt = require('bcryptjs');
+const User = require("../models/User");
+const bcrypt = require("bcryptjs");
 const auth = require("../auth");
-const { errorHandler } = require('../auth');
-
-module.exports.checkEmailExists = (req, res) => {
-
-    if (req.body.email.includes("@")) {
-
-        return User.find({ email : req.body.email })
-        .then(result => {
-
-            if (result.length > 0) {
-
-                return res.status(409).send({ message: "Duplicate email found" });
-
-            } else {
-
-                return res.status(200).send({ message: "No duplicate email found" });
-            };
-        })
-        .catch(error => errorHandler(error, req, res));
-
-    } else {
-
-        res.status(400).send({ message: "Email invalid" });
-    }
+module.exports.checkEmailExists = async (req, res) => {
+    const result = await User.find({ email: req.body.email });
+    const emailExists = result.length > 0;
+    return res.status(200).send({
+        message: emailExists ? "Email exists" : "Email does not exist",
+        emailExists,
+    });
 };
 
-module.exports.registerUser = (req, res) => {
-
-    if (!req.body.email.includes("@")){
-        return res.status(400).send({ message: 'Invalid email format' });
-    }
-    else if (req.body.mobileNo.length !== 11){
-        return res.status(400).send({ message: 'Mobile number is invalid' });
-    }
-    else if (req.body.password.length < 8) {
-        return res.status(400).send({ message: 'Password must be atleast 8 characters long' });
+module.exports.registerUser = async (req, res) => {
+    if (req.body.mobileNo.length !== 11) {
+        return res.status(400).send({ message: "Mobile number is invalid" });
+    } else if (req.body.password.length < 8) {
+        return res
+            .status(400)
+            .send({ message: "Password must be atleast 8 characters long" });
     } else {
-
         let newUser = new User({
-            firstName : req.body.firstName,
-            lastName : req.body.lastName,
-            email : req.body.email,
-            mobileNo : req.body.mobileNo,
-            password : bcrypt.hashSync(req.body.password, 10)
-        })
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            email: req.body.email,
+            mobileNo: req.body.mobileNo,
+            password: bcrypt.hashSync(req.body.password, 10),
+        });
 
-        return newUser.save()
-        .then((result) => res.status(201).send({
-            message: 'User registered successfully',
-            user: result
-        }))
-        .catch(error => errorHandler(error, req, res));
+        const result = await newUser.save();
+        return res.status(201).send({
+            message: "User registered successfully",
+            user: result,
+        });
     }
 };
 
-module.exports.loginUser = (req, res) => {
+module.exports.loginUser = async (req, res) => {
+    const result = await User.findOne({ email: req.body.email });
 
-    if (req.body.email.includes("@")) {
-
-        return User.findOne({ email : req.body.email })
-        .then(result => {
-
-            if(result == null){
-
-                return res.status(404).send({ message: 'No email found' });
-
-            } else {
-
-                const isPasswordCorrect = bcrypt.compareSync(req.body.password, result.password);
-
-                if (isPasswordCorrect) {
-
-                    return res.status(200).send({ 
-                        message: 'User logged in successfully',
-                        access : auth.createAccessToken(result)
-                    })
-
-                } else {
-
-                    return res.status(401).send({ message: 'Incorrect email or password' });
-                }
-            }
-        })
-        .catch(error => errorHandler(error, req, res));
-
-    } else {
-
-        return res.status(400).send({ message: 'Invalid email format' });
+    if (result == null) {
+        return res.status(404).send({ message: "No email found" });
     }
-}
 
-module.exports.getProfile = (req,res) => {
+    const isPasswordCorrect = bcrypt.compareSync(
+        req.body.password,
+        result.password,
+    );
 
-    return User.findById(req.user.id)
-    .then(user => {
-        if(!user){
-            
-            return res.status(403).send({ message: 'User not found' });
+    if (isPasswordCorrect) {
+        return res.status(200).send({
+            message: "User logged in successfully",
+            access: auth.createAccessToken(result),
+        });
+    }
 
-        } else {
+    return res.status(401).send({ message: "Incorrect email or password" });
+};
 
-            user.password = "";
-            return res.status(200).send(user);
-        }  
-    })
-    .catch(error => errorHandler(error, req, res));
+module.exports.getProfile = async (req, res) => {
+    const user = await User.findById(req.user.id);
 
+    if (!user) {
+        return res.status(403).send({ message: "User not found" });
+    }
+
+    user.password = "";
+    return res.status(200).send(user);
 };
 
 module.exports.resetPassword = async (req, res) => {
-
     const { newPassword } = req.body;
-    const { id } = req.user; 
+    const { id } = req.user;
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    User.findByIdAndUpdate(id, { password: hashedPassword })
-    .then(result => {
-
-        res.status(200).json({ message: 'Password reset successfully' });
-    })
-    .catch(error => errorHandler(error, req, res));
+    await User.findByIdAndUpdate(id, { password: hashedPassword });
+    return res.status(200).send({ message: "Password reset successfully" });
 };
 
 module.exports.updateProfile = async (req, res) => {
-
     const userId = req.user.id;
 
     const { firstName, lastName, mobileNo } = req.body;
 
-    User.findByIdAndUpdate(userId, { firstName, lastName, mobileNo }, { new: true })
-    .then(updatedUser => res.status(200).send(updatedUser))
-    .catch(error => errorHandler(error, req, res)); 
-}
+    const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { firstName, lastName, mobileNo },
+        { new: true },
+    );
+
+    updatedUser.password = "";
+
+    return res.status(200).send(updatedUser);
+};
