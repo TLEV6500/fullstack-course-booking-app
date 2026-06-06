@@ -1,6 +1,7 @@
 const express = require("express");
 const courseController = require("../controllers/course");
 const auth = require("../middlewares/auth");
+const { create405Handler } = require("../middlewares/handle405");
 
 const { verifyToken, verifyAdmin } = auth;
 
@@ -29,5 +30,6 @@ router.patch(
     courseController.activateCourse,
 );
 router.post("/search", courseController.searchCoursesByName);
+router.all(create405Handler(["POST", "GET", "PATCH"]));
 
 module.exports = router;

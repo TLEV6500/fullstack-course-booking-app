@@ -6,56 +6,61 @@ const userRoutes = require("./routes/user");
 const courseRoutes = require("./routes/course");
 const enrollmentRoutes = require("./routes/enrollment");
 const { logErrors } = require("./middlewares/error");
+const { create405Handler } = require("./middlewares/handle405");
 require("dotenv").config();
 
-if (!process.env.ALLOWED_ORIGINS || !process.env.NODE_ENV)
-    throw new Error(
-        "Environmental variables ALLOWED_ORIGINS and NODE_ENV must be set.",
+const createApplication = () => {
+    if (!process.env.ALLOWED_ORIGINS || !process.env.NODE_ENV)
+        throw new Error(
+            "Environmental variables ALLOWED_ORIGINS and NODE_ENV must be set.",
+        );
+
+    const app = express();
+
+    app.use(express.json());
+
+    const corsOptions = {
+        origin: JSON.parse(process.env.ALLOWED_ORIGINS)[process.env.NODE_ENV],
+        credentials: true,
+        optionsSuccessStatus: 200,
+    };
+
+    app.use(cors(corsOptions));
+    app.get("/", (req, res) => {
+        return res.status(200).send("Server is running!");
+    });
+
+    let dbURI = process.env.MONGODB_STRING;
+
+    if (process.env.NODE_ENV === "test") {
+        dbURI = process.env.MONGODB_STRING_TEST;
+    }
+
+    mongoose.connect(dbURI);
+    mongoose.connection.once("open", () =>
+        console.log("Now connected to MongoDB Atlas."),
     );
 
-const app = express();
+    const swaggerSpec = require("./swagger");
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    app.get("/api-docs.json", (req, res) => {
+        res.setHeader("Content-Type", "application/json");
+        res.send(swaggerSpec);
+    });
+    app.use("/users", userRoutes);
+    app.use("/courses", courseRoutes);
+    app.use("/enrollments", enrollmentRoutes);
+    app.all(create405Handler(["GET", "POST", "PUT", "PATCH"]));
+    app.use(logErrors);
 
-app.use(express.json());
-
-const corsOptions = {
-    origin: JSON.parse(process.env.ALLOWED_ORIGINS)[process.env.NODE_ENV],
-    credentials: true,
-    optionsSuccessStatus: 200,
+    if (require.main === module) {
+        app.listen(process.env.PORT || 3000, () => {
+            console.log(
+                `API is now online on port ${process.env.PORT || 3000} in ${process.env.NODE_ENV} mode.`,
+            );
+        });
+    }
+    return { app, mongoose };
 };
 
-app.use(cors(corsOptions));
-app.get("/", (req, res) => {
-    return res.status(200).send("Server is running!");
-});
-
-let dbURI = process.env.MONGODB_STRING;
-
-if (process.env.NODE_ENV === "test") {
-    dbURI = process.env.MONGODB_STRING_TEST;
-}
-
-mongoose.connect(dbURI);
-mongoose.connection.once("open", () =>
-    console.log("Now connected to MongoDB Atlas."),
-);
-
-const swaggerSpec = require("./swagger");
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.get("/api-docs.json", (req, res) => {
-    res.setHeader("Content-Type", "application/json");
-    res.send(swaggerSpec);
-});
-app.use("/users", userRoutes);
-app.use("/courses", courseRoutes);
-app.use("/enrollments", enrollmentRoutes);
-app.use(logErrors);
-
-if (require.main === module) {
-    app.listen(process.env.PORT || 3000, () => {
-        console.log(
-            `API is now online on port ${process.env.PORT || 3000} in ${process.env.NODE_ENV} mode.`,
-        );
-    });
-}
-
-module.exports = { app, mongoose };
+module.exports = createApplication;
