@@ -12,11 +12,17 @@ const request = require("supertest");
 const jestOpenApi = require("jest-openapi").default;
 
 // Require app after environment is prepared
-const { app, mongoose } = require("../index");
+const createApplication = require("../index");
 const User = require("../models/User");
 
 describe("User routes integration tests", () => {
+    let app;
+    let mongoose;
     beforeAll(async () => {
+        const api = createApplication();
+        app = api.app;
+        mongoose = api.mongoose;
+
         const swaggerSpec = require("../swagger");
         jestOpenApi(swaggerSpec);
 
