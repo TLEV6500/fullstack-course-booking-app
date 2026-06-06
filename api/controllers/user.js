@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
-const auth = require("../auth");
+const auth = require("../middlewares/auth");
 module.exports.checkEmailExists = async (req, res) => {
     const result = await User.find({ email: req.body.email });
     const emailExists = result.length > 0;

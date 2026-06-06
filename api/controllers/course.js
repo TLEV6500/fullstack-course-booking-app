@@ -1,5 +1,4 @@
 const Course = require("../models/Course");
-const { errorHandler } = require("../auth");
 
 module.exports.addCourse = async (req, res) => {
     let newCourse = new Course({

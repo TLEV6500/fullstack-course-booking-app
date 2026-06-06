@@ -1,5 +1,4 @@
 const Enrollment = require("../models/Enrollment");
-const { errorHandler } = require("../auth");
 
 module.exports.enroll = async (req, res) => {
     if (req.user.isAdmin) {
