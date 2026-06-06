@@ -1,0 +1,120 @@
+tags:
+    - name: Enrollments
+      description: Enrollment management endpoints
+paths:
+    /enroll:
+        post:
+            tags:
+                - Enrollments
+            summary: Enroll the authenticated user in courses
+            security:
+                - bearerAuth: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/EnrollRequest"
+            responses:
+                "201":
+                    description: Enrolled successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/EnrollResponse"
+                "403":
+                    description: Action forbidden (e.g. admin cannot enroll or auth failure)
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+    /get-enrollments:
+        get:
+            tags:
+                - Enrollments
+            summary: Get authenticated user's enrollments
+            security:
+                - bearerAuth: []
+            responses:
+                "200":
+                    description: List of enrollments for the authenticated user
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/Enrollment"
+                "404":
+                    description: No enrolled courses
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                "403":
+                    description: Authentication failed
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+components:
+    schemas:
+        EnrollRequest:
+            type: object
+            required:
+                - enrolledCourses
+                - totalPrice
+            properties:
+                enrolledCourses:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/EnrolledCourse"
+                totalPrice:
+                    type: number
+                    format: float
+                    example: 199.99
+        EnrolledCourse:
+            type: object
+            required:
+                - courseId
+            properties:
+                courseId:
+                    type: string
+                    example: "60d1f7a9a2f4c2d7a5b4c3e6"
+        EnrollResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                    example: true
+                message:
+                    type: string
+                    example: Enrolled successfully
+        Enrollment:
+            type: object
+            properties:
+                _id:
+                    type: string
+                    example: "60e3b8e2f9a4b21cda4e1234"
+                userId:
+                    type: string
+                    example: "60d1f7a9a2f4c2d7a5b4c3e6"
+                enrolledCourses:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/EnrolledCourse"
+                totalPrice:
+                    type: number
+                    example: 199.99
+                enrolledOn:
+                    type: string
+                    format: date-time
+                    example: "2026-06-05T12:00:00Z"
+                status:
+                    type: string
+                    example: Enrolled
+        ErrorResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: No enrolled courses

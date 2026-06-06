@@ -5,7 +5,7 @@ const swaggerUi = require("swagger-ui-express");
 const userRoutes = require("./routes/user");
 const courseRoutes = require("./routes/course");
 const enrollmentRoutes = require("./routes/enrollment");
-const logErrors = require("./middlewares/error");
+const { logErrors } = require("./middlewares/error");
 require("dotenv").config();
 
 if (!process.env.ALLOWED_ORIGINS || !process.env.NODE_ENV)
@@ -24,14 +24,27 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.get("/", (req, res) => {
+    return res.status(200).send("Server is running!");
+});
 
-mongoose.connect(process.env.MONGODB_STRING);
+let dbURI = process.env.MONGODB_STRING;
+
+if (process.env.NODE_ENV === "test") {
+    dbURI = process.env.MONGODB_STRING_TEST;
+}
+
+mongoose.connect(dbURI);
 mongoose.connection.once("open", () =>
     console.log("Now connected to MongoDB Atlas."),
 );
 
 const swaggerSpec = require("./swagger");
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get("/api-docs.json", (req, res) => {
+    res.setHeader("Content-Type", "application/json");
+    res.send(swaggerSpec);
+});
 app.use("/users", userRoutes);
 app.use("/courses", courseRoutes);
 app.use("/enrollments", enrollmentRoutes);
@@ -39,7 +52,9 @@ app.use(logErrors);
 
 if (require.main === module) {
     app.listen(process.env.PORT || 3000, () => {
-        console.log(`API is now online on port ${process.env.PORT || 3000}`);
+        console.log(
+            `API is now online on port ${process.env.PORT || 3000} in ${process.env.NODE_ENV} mode.`,
+        );
     });
 }
 
