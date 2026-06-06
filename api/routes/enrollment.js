@@ -1,6 +1,6 @@
 const express = require("express");
 const enrollmentController = require("../controllers/enrollment");
-const auth = require("../auth");
+const auth = require("../middlewares/auth");
 
 const { verifyToken } = auth;
 

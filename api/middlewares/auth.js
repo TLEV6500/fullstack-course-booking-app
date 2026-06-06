@@ -17,7 +17,7 @@ module.exports.verifyToken = (req, res, next) => {
     if (typeof token === "undefined") {
         return res.status(403).send({
             auth: "Failed",
-            message: err.message,
+            message: "No token provided",
         });
     } else {
         token = token.slice(7, token.length);
@@ -29,7 +29,7 @@ module.exports.verifyToken = (req, res, next) => {
                 if (err) {
                     return res.status(403).send({
                         auth: "Failed",
-                        message: err.message,
+                        message: err?.message,
                     });
                 } else {
                     req.user = decodedToken;

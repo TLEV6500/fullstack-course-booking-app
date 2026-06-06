@@ -1,6 +1,6 @@
 const express = require("express");
 const courseController = require("../controllers/course");
-const auth = require("../auth");
+const auth = require("../middlewares/auth");
 
 const { verifyToken, verifyAdmin } = auth;
 
