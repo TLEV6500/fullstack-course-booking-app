@@ -6,9 +6,12 @@
         "dev": "nodemon index.js",
         "debug": "DEBUG=express:* node index.js",
         "start": "node index.js",
+        "schemathesis": "schemathesis run http://localhost:4000/api-docs.json -H \\\"Authorization: Bearer $AUTH_TOKEN\\\" --report-junit-path=fuzz-report.xml",
+        "pretest:fuzz:cache-db": "node ./scripts/cache-mongo-binary.js",
+        "pretest:fuzz:start": "node ./scripts/run-st-test-server.js",
         "test:unit": "jest --passWithNoTests \\.unit\\.test\\.js$",
         "test:integration": "jest --passWithNoTests \\.integration\\.test\\.js$",
-        "test:fuzz": "start-server-and-test start http://localhost:4000 \"schemathesis run http://localhost:4000/api-docs.json -H \\\"Authorization: Bearer $AUTH_TOKEN\\\" --report-junit-path=fuzz-report.xml\"",
+        "test:fuzz": "start-server-and-test pretest:fuzz:start http://localhost:4000 schemathesis",
         "test:all": "npm run test:unit && npm run test:integration && npm run test:fuzz"
     },
     "keywords": [],
@@ -30,15 +33,11 @@
         "@apidevtools/swagger-parser": "^12.1.0",
         "jest": "^30.4.2",
         "jest-openapi": "^0.14.1",
+        "mongodb-memory-server": "^11.2.0",
         "supertest": "^7.2.2",
         "yamljs": "^0.3.0"
     },
     "overrides": {
         "axios": "^1.7.0"
-    },
-    "jest": {
-        "setupFiles": [
-            "./tests/jest.setup.js"
-        ]
     }
 }
