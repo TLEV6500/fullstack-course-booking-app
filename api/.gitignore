@@ -1,5 +1,5 @@
 node_modules/
 .env
 fuzz-report.xml
-*.xml
+reports/
 notes/
