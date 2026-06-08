@@ -1,7 +1,8 @@
 const express = require("express");
 const courseController = require("../controllers/course");
 const auth = require("../middlewares/auth");
-const { create405Handler } = require("../middlewares/handle405");
+const { create405Handler } = require("../middlewares/error");
+const { createTextInputValidator } = require("../middlewares/validation");
 
 const { verifyToken, verifyAdmin } = auth;
 
@@ -29,7 +30,11 @@ router.patch(
     verifyAdmin,
     courseController.activateCourse,
 );
-router.post("/search", courseController.searchCoursesByName);
-router.all(create405Handler(["POST", "GET", "PATCH"]));
+router.post(
+    "/search",
+    createTextInputValidator({ courseName: true }),
+    courseController.searchCoursesByName,
+);
+router.all("*path", create405Handler(["POST", "GET", "PATCH"]));
 
 module.exports = router;

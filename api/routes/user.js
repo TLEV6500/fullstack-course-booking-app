@@ -1,6 +1,7 @@
 const express = require("express");
 const userController = require("../controllers/user");
 const { verifyToken } = require("../middlewares/auth");
+const { create405Handler } = require("../middlewares/error");
 
 const router = express.Router();
 
@@ -10,6 +11,6 @@ router.post("/login", userController.loginUser);
 router.get("/details", verifyToken, userController.getProfile);
 router.post("/reset-password", verifyToken, userController.resetPassword);
 router.put("/profile", verifyToken, userController.updateProfile);
-router.all(create405Handler(["POST", "GET", "PUT"]));
+router.all("*path", create405Handler(["POST", "GET", "PUT"]));
 
 module.exports = router;

@@ -41,11 +41,14 @@ module.exports.getAllActive = async (req, res) => {
 };
 
 module.exports.getCourse = async (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({ message: "Invalid course id format." });
+    }
     const course = await Course.findById(req.params.id);
     if (course) {
-        return res.status(200).send(course);
+        return res.status(200).json(course);
     } else {
-        return res.status(404).send({ message: "Course not found" });
+        return res.status(404).json({ message: "Course not found" });
     }
 };
 
@@ -118,5 +121,5 @@ module.exports.searchCoursesByName = async (req, res) => {
     const courses = await Course.find({
         name: { $regex: courseName, $options: "i" },
     });
-    return res.status(200).send(courses);
+    return res.status(200).json(courses);
 };

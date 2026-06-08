@@ -35,10 +35,10 @@ module.exports.registerUser = async (req, res) => {
 };
 
 module.exports.loginUser = async (req, res) => {
-    const result = await User.findOne({ email: req.body.email });
+    const result = await User.findOne({ email: req.body.email }).lean();
 
     if (result == null) {
-        return res.status(404).send({ message: "No email found" });
+        return res.status(404).send({ message: "No user found" });
     }
 
     const isPasswordCorrect = bcrypt.compareSync(
@@ -78,6 +78,9 @@ module.exports.resetPassword = async (req, res) => {
 };
 
 module.exports.updateProfile = async (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.user.id)) {
+        return res.status(400).send({ message: "Invalid user ID" });
+    }
     const userId = req.user.id;
 
     const { firstName, lastName, mobileNo } = req.body;
@@ -87,6 +90,10 @@ module.exports.updateProfile = async (req, res) => {
         { firstName, lastName, mobileNo },
         { new: true },
     );
+
+    if (!updatedUser) {
+        return res.status(404).send({ message: "User not found" });
+    }
 
     updatedUser.password = "";
 

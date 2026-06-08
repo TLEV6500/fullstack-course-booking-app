@@ -5,8 +5,11 @@ const swaggerUi = require("swagger-ui-express");
 const userRoutes = require("./routes/user");
 const courseRoutes = require("./routes/course");
 const enrollmentRoutes = require("./routes/enrollment");
-const { logErrors } = require("./middlewares/error");
-const { create405Handler } = require("./middlewares/handle405");
+const {
+    logErrors,
+    handleErrors,
+    create405Handler,
+} = require("./middlewares/error");
 require("dotenv").config();
 
 const createApplication = () => {
@@ -50,8 +53,9 @@ const createApplication = () => {
     app.use("/users", userRoutes);
     app.use("/courses", courseRoutes);
     app.use("/enrollments", enrollmentRoutes);
-    app.all(create405Handler(["GET", "POST", "PUT", "PATCH"]));
+    app.all("*path", create405Handler(["GET", "POST", "PUT", "PATCH"]));
     app.use(logErrors);
+    app.use(handleErrors);
 
     if (require.main === module) {
         app.listen(process.env.PORT || 3000, () => {

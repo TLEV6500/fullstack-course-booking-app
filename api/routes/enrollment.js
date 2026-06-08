@@ -1,7 +1,7 @@
 const express = require("express");
 const enrollmentController = require("../controllers/enrollment");
 const auth = require("../middlewares/auth");
-const { create405Handler } = require("../middlewares/handle405");
+const { create405Handler } = require("../middlewares/error");
 
 const { verifyToken } = auth;
 
@@ -13,6 +13,6 @@ router.get(
     verifyToken,
     enrollmentController.getEnrollments,
 );
-router.all(create405Handler(["POST", "GET"]));
+router.all("*path", create405Handler(["POST", "GET"]));
 
 module.exports = router;

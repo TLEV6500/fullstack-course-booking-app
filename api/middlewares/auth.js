@@ -31,10 +31,18 @@ module.exports.verifyToken = (req, res, next) => {
                         auth: "Failed",
                         message: err?.message,
                     });
-                } else {
+                } else if (
+                    Object.keys(decodedToken).every(
+                        (prop) => !decodedToken[prop],
+                    )
+                ) {
                     req.user = decodedToken;
                     next();
-                }
+                } else
+                    return res.status(401).json({
+                        message:
+                            "The provided JWT token is malformed or its signature is invalid.",
+                    });
             },
         );
     }
