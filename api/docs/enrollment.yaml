@@ -22,6 +22,12 @@ paths:
                         application/json:
                             schema:
                                 $ref: "#/components/schemas/EnrollResponse"
+                "400":
+                    description: Bad request
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
                 "403":
                     description: Action forbidden (e.g. admin cannot enroll or auth failure)
                     content:

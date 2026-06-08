@@ -20,6 +20,12 @@ paths:
                         application/json:
                             schema:
                                 $ref: "#/components/schemas/CheckEmailResponse"
+                "400":
+                    description: Bad request
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
     /register:
         post:
             tags:
@@ -45,7 +51,7 @@ paths:
                                     user:
                                         $ref: "#/components/schemas/User"
                 "400":
-                    description: Invalid input (e.g. mobile number invalid, short password)
+                    description: Bad request
                     content:
                         application/json:
                             schema:
@@ -68,6 +74,12 @@ paths:
                         application/json:
                             schema:
                                 $ref: "#/components/schemas/LoginResponse"
+                "400":
+                    description: Bad request
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
                 "401":
                     description: Incorrect email or password
                     content:
@@ -120,6 +132,12 @@ paths:
                         application/json:
                             schema:
                                 $ref: "#/components/schemas/MessageResponse"
+                "400":
+                    description: Bad request
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
                 "403":
                     description: Authentication failed
                     content:
@@ -146,8 +164,20 @@ paths:
                         application/json:
                             schema:
                                 $ref: "#/components/schemas/UserPublic"
+                "400":
+                    description: Bad request
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
                 "403":
                     description: Authentication failed
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                "404":
+                    description: Not found
                     content:
                         application/json:
                             schema:
