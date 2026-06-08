@@ -156,6 +156,19 @@ describe("Courses routes integration tests", () => {
         expect(res).toSatisfyApiSpec();
     });
 
+    test("GET /courses/specific/0 should return status 400", async () => {
+        const res = await request(app).get("/courses/specific/0");
+        expect(res.status).toBe(400);
+        expect(res).toSatisfyApiSpec();
+    });
+
+    test("GET /courses/specific/:id where :id does not reference any user should return status 404", async () => {
+        const courseId = new mongoose.Types.ObjectId();
+        const res = await request(app).get(`/courses/specific/${courseId}`);
+        expect(res.status).toBe(404);
+        expect(res).toSatisfyApiSpec();
+    });
+
     test("POST /courses/search should find course by name", async () => {
         const res = await request(app)
             .post("/courses/search")
@@ -182,6 +195,45 @@ describe("Courses routes integration tests", () => {
         const found = res.body.find((c) => String(c._id) === String(courseId));
         expect(found).toBeTruthy();
         expect(res).toSatisfyApiSpec();
+    });
+
+    test("TRACE /courses should return 405", async () => {
+        const res = await request(app).trace("/courses");
+        expect(res.status).toBe(405);
+    });
+
+    test("TRACE /courses/all should return 405", async () => {
+        const res = await request(app).trace("/courses/all");
+        expect(res.status).toBe(405);
+    });
+
+    test("TRACE /courses/search should return 405", async () => {
+        const res = await request(app).trace("/courses/search");
+        expect(res.status).toBe(405);
+    });
+
+    test("TRACE /courses/specific/:id should return 405", async () => {
+        const courseId = new mongoose.Types.ObjectId();
+        const res = await request(app).trace(`/courses/specific/${courseId}`);
+        expect(res.status).toBe(405);
+    });
+
+    test("TRACE /courses/:id should return 405", async () => {
+        const courseId = new mongoose.Types.ObjectId();
+        const res = await request(app).trace(`/courses/${courseId}`);
+        expect(res.status).toBe(405);
+    });
+
+    test("TRACE /courses/:id/activate should return 405", async () => {
+        const courseId = new mongoose.Types.ObjectId();
+        const res = await request(app).trace(`/courses/${courseId}/activate`);
+        expect(res.status).toBe(405);
+    });
+
+    test("TRACE /courses/:id/archive should return 405", async () => {
+        const courseId = new mongoose.Types.ObjectId();
+        const res = await request(app).trace(`/courses/${courseId}/archive`);
+        expect(res.status).toBe(405);
     });
 
     afterAll(async () => {

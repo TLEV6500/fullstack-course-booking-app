@@ -112,6 +112,16 @@ describe("Enrollments routes integration tests", () => {
         expect(res).toSatisfyApiSpec();
     });
 
+    test("TRACE /enrollments/enroll should return 405", async () => {
+        const res = await request(app).trace(`/enrollments/enroll`);
+        expect(res.status).toBe(405);
+    });
+
+    test("TRACE /enrollments/get-enrollments should return 405", async () => {
+        const res = await request(app).trace(`/enrollments/get-enrollments`);
+        expect(res.status).toBe(405);
+    });
+
     afterAll(async () => {
         try {
             // remove enrollments for this user

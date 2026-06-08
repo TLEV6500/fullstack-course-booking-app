@@ -142,6 +142,36 @@ describe("User routes integration tests", () => {
         expect(loginRes).toSatisfyApiSpec();
     });
 
+    test("TRACE /users/check-email should return 405", async () => {
+        const res = await request(app).trace(`/users/check-email`);
+        expect(res.status).toBe(405);
+    });
+
+    test("TRACE /users/login should return 405", async () => {
+        const res = await request(app).trace(`/users/login`);
+        expect(res.status).toBe(405);
+    });
+
+    test("TRACE /users/register should return 405", async () => {
+        const res = await request(app).trace(`/users/register`);
+        expect(res.status).toBe(405);
+    });
+
+    test("TRACE /users/reset-password should return 405", async () => {
+        const res = await request(app).trace(`/users/reset-password`);
+        expect(res.status).toBe(405);
+    });
+
+    test("TRACE /users/profile should return 405", async () => {
+        const res = await request(app).trace(`/users/profile`);
+        expect(res.status).toBe(405);
+    });
+
+    test("TRACE /users/details should return 405", async () => {
+        const res = await request(app).trace(`/users/details`);
+        expect(res.status).toBe(405);
+    });
+
     afterAll(async () => {
         try {
             await User.deleteOne({ email: testEmail });

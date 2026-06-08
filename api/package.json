@@ -6,11 +6,11 @@
         "dev": "nodemon index.js",
         "debug": "DEBUG=express:* node index.js",
         "start": "node index.js",
-        "schemathesis": "schemathesis run http://localhost:4000/api-docs.json -H \\\"Authorization: Bearer $AUTH_TOKEN\\\" --report-junit-path=fuzz-report.xml",
+        "schemathesis": "schemathesis run http://localhost:4000/api-docs.json -H \\\"Authorization: Bearer $AUTH_TOKEN\\\" --report-junit-path=reports/fuzz-report.xml",
         "pretest:fuzz:cache-db": "node ./scripts/cache-mongo-binary.js",
         "pretest:fuzz:start": "node ./scripts/run-st-test-server.js",
         "test:unit": "jest --passWithNoTests \\.unit\\.test\\.js$",
-        "test:integration": "jest --passWithNoTests \\.integration\\.test\\.js$",
+        "test:integration": "jest --passWithNoTests --detectOpenHandles \\.integration\\.test\\.js$",
         "test:fuzz": "start-server-and-test pretest:fuzz:start http://localhost:4000 schemathesis",
         "test:all": "npm run test:unit && npm run test:integration && npm run test:fuzz"
     },
@@ -25,15 +25,16 @@
         "express": "^5.1.0",
         "jsonwebtoken": "^9.0.3",
         "mongoose": "^8.18.0",
-        "start-server-and-test": "^3.0.8",
         "swagger-jsdoc": "^6.3.0",
         "swagger-ui-express": "^5.0.1"
     },
     "devDependencies": {
         "@apidevtools/swagger-parser": "^12.1.0",
         "jest": "^30.4.2",
+        "jest-junit": "^17.0.0",
         "jest-openapi": "^0.14.1",
         "mongodb-memory-server": "^11.2.0",
+        "start-server-and-test": "^3.0.8",
         "supertest": "^7.2.2",
         "yamljs": "^0.3.0"
     },
