@@ -1,0 +1,21 @@
+# --- Stage 1: Build & Dependencies ---
+FROM node:20-alpine AS builder
+WORKDIR /usr/src/app
+COPY package*.json ./
+# Install ALL dependencies (including devDependencies if migrating to TS)
+RUN npm ci
+COPY . .
+# If using TypeScript later, run your build script here: RUN npm run build
+
+# --- Stage 2: Production Runtime ---
+FROM node:20-alpine AS runner
+WORKDIR /usr/src/app
+ENV NODE_ENV=production
+COPY package*.json ./
+# Install ONLY production dependencies to keep image small
+RUN npm ci --only=production
+# Copy built files from the builder stage
+COPY --from=builder /usr/src/app .
+
+EXPOSE 5000
+CMD ["npm", "start"]
