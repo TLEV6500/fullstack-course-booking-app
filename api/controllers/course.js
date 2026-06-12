@@ -1,175 +1,134 @@
 const Course = require("../models/Course");
-const { errorHandler } = require('../auth');
+const mongoose = require("mongoose");
 
-module.exports.addCourse = (req, res) => {
-
+module.exports.addCourse = async (req, res) => {
     let newCourse = new Course({
-        name : req.body.name,
-        description : req.body.description,
-        price : req.body.price
-    });
-
-    Course.findOne({ name: req.body.name })
-    .then(existingCourse => { 
-
-        if (existingCourse) {
-
-            return res.status(409).send({ message: 'Course already exists' });
-
-        } else {
-
-            return newCourse.save()
-            .then(result => res.status(201).send({ 
-                success: true,
-                message: 'Course added successfully', 
-                result: result 
-            }))
-            .catch(error => errorHandler(error, req, res));
-        }
-    })
-    .catch(error => errorHandler(error, req, res));
-}
-
-module.exports.getAllCourses = (req, res) => {
-
-    return Course.find({})
-    .then(result => {
-        
-        if(result.length > 0) {
-
-            return res.status(200).send(result);
-
-        } else {
-
-            return res.status(404).send({ message: 'No courses found' });
-        }
-    })
-    .catch(error => errorHandler(error, req, res));
-};
-
-module.exports.getAllActive = (req, res) => {
-
-    Course.find({ isActive: true })
-    .then(result => {
-
-        if (result.length > 0) {
-
-            return res.status(200).send(result);
-
-        } else {
-
-            return res.status(200).send({ message: 'No active courses found' });
-        }
-    })
-    .catch(error => errorHandler(error, req, res));
-};
-
-module.exports.getCourse = (req, res) => {
-
-    Course.findById(req.params.id)
-    .then(course => {
-        if(course) {
-
-            return res.status(200).send(course);
-
-        } else {
-
-            return res.status(404).send({ message: 'Course not found' });
-        }
-    })
-    .catch(err => err);
-};
-
-module.exports.updateCourse = (req, res)=>{
-
-    let updatedCourse = {
         name: req.body.name,
         description: req.body.description,
-        price: req.body.price
+        price: req.body.price,
+    });
+
+    const existingCourse = await Course.findOne({ name: req.body.name });
+
+    if (existingCourse) {
+        return res.status(409).send({ message: "Course already exists" });
     }
 
-    return Course.findByIdAndUpdate(req.params.courseId, updatedCourse)
-    .then(course => {
-        
-        if (course) {
+    const result = await newCourse.save();
 
-            res.status(200).send({ success: true, message: 'Course updated successfully' });
-
-        } else {
-
-            res.status(404).send({ message: 'Course not found' });
-        }
-    })
-    .catch(error => errorHandler(error, req, res));
+    return res.status(201).send({
+        success: true,
+        message: "Course added successfully",
+        result: result,
+    });
 };
 
-module.exports.archiveCourse = (req, res) => {
+module.exports.getAllCourses = async (req, res) => {
+    const result = await Course.find({}).lean();
+    return res.status(200).send(result);
+};
 
+module.exports.getAllActive = async (req, res) => {
+    const result = await Course.find({ isActive: true }).lean();
+    if (result.length > 0) {
+        return res.status(200).send(result);
+    } else {
+        return res.status(200).send({ message: "No active courses found" });
+    }
+};
+
+module.exports.getCourse = async (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({ message: "Invalid course id format." });
+    }
+    const course = await Course.findById(req.params.id).lean();
+    if (course) {
+        return res.status(200).json(course);
+    } else {
+        return res.status(404).json({ message: "Course not found" });
+    }
+};
+
+module.exports.updateCourse = async (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.courseId)) {
+        return res.status(400).json({
+            message:
+                "Invalid course id format. Received: " + req.params.courseId,
+        });
+    }
+    let updatedCourse = {};
+
+    if (req.body.name) updatedCourse.name = req.body.name;
+    if (req.body.description) updatedCourse.description = req.body.description;
+    if (req.body.price) updatedCourse.price = req.body.price;
+
+    const course = await Course.findByIdAndUpdate(
+        req.params.courseId,
+        updatedCourse,
+    );
+    if (course) {
+        return res.status(200).send({
+            success: true,
+            message: "Course updated successfully",
+        });
+    } else {
+        return res.status(404).send({ message: "Course not found" });
+    }
+};
+
+module.exports.archiveCourse = async (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.courseId)) {
+        return res.status(400).json({ message: "Invalid course id format." });
+    }
     let updateActiveField = {
-        isActive: false
+        isActive: false,
+    };
+
+    const course = await Course.findByIdAndUpdate(
+        req.params.courseId,
+        updateActiveField,
+    );
+    if (course) {
+        return res.status(200).send({
+            message: !course.isActive
+                ? "Course already archived"
+                : "Course archived successfully",
+            course,
+        });
+    } else {
+        return res.status(404).send({ message: "Course not found" });
     }
-
-    return Course.findByIdAndUpdate(req.params.courseId, updateActiveField)
-    .then(course => {
-        
-        if (course) {
- 
-            if (!course.isActive) {
-                return res.status(200).send({ 
-                    message: 'Course already archived',
-                    course: course
-                });
-            }
-
-            return res.status(200).send({ 
-                success: true, 
-                message: 'Course archived successfully'
-            });
-
-        } else {
-
-            return res.status(404).send({ message: 'Course not found' });
-        }
-    })
-    .catch(error => errorHandler(error, req, res));
 };
 
-module.exports.activateCourse = (req, res) => {
-
+module.exports.activateCourse = async (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.courseId)) {
+        return res.status(400).json({ message: "Invalid course id format." });
+    }
     let updateActiveField = {
-        isActive: true
+        isActive: true,
+    };
+
+    const course = await Course.findByIdAndUpdate(
+        req.params.courseId,
+        updateActiveField,
+    );
+    if (course) {
+        return res.status(200).send({
+            message: course.isActive
+                ? "Course already activated"
+                : "Course activated successfully",
+            course,
+        });
+    } else {
+        return res.status(404).send({ message: "Course not found" });
     }
-    
-    return Course.findByIdAndUpdate(req.params.courseId, updateActiveField)
-    .then(course => {
-        
-        if (course) {
-
-            if (course.isActive) {
-                return res.status(200).send({ 
-                    message: 'Course already activated', 
-                    course: course
-                });
-            }
-
-            return res.status(200).send({
-                success: true,
-                message: 'Course activated successfully'
-            });
-
-        } else {
-
-            return res.status(404).send({ message: 'Course not found' });
-        }
-    })
-    .catch(error => errorHandler(error, req, res));
 };
 
-module.exports.searchCoursesByName = (req, res) => {
-
+module.exports.searchCoursesByName = async (req, res) => {
     const { courseName } = req.body;
 
-    Course.find({ name: { $regex: courseName, $options: 'i' } })
-    .then(courses => res.status(200).send(courses))
-    .catch(error => errorHandler(error, req, res));
+    const courses = await Course.find({
+        name: { $regex: courseName, $options: "i" },
+    });
+    return res.status(200).json(courses);
 };

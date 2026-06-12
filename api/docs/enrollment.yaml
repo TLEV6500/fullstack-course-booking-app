@@ -1,0 +1,129 @@
+tags:
+    - name: Enrollments
+      description: Enrollment management endpoints
+paths:
+    /enroll:
+        post:
+            tags:
+                - Enrollments
+            summary: Enroll the authenticated user in courses
+            security:
+                - bearerAuth: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/EnrollRequest"
+            responses:
+                "201":
+                    description: Enrolled successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/EnrollResponse"
+                "400":
+                    description: Bad request
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                "403":
+                    description: Action forbidden (e.g. admin cannot enroll or auth failure)
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+    /get-enrollments:
+        get:
+            tags:
+                - Enrollments
+            summary: Get authenticated user's enrollments
+            security:
+                - bearerAuth: []
+            responses:
+                "200":
+                    description: List of enrollments for the authenticated user
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/Enrollment"
+                "404":
+                    description: No enrolled courses
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                "403":
+                    description: Authentication failed
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+components:
+    schemas:
+        EnrollRequest:
+            type: object
+            required:
+                - enrolledCourses
+                - totalPrice
+            properties:
+                enrolledCourses:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/EnrolledCourse"
+                totalPrice:
+                    type: number
+                    format: float
+                    example: 199.99
+        EnrolledCourse:
+            type: object
+            required:
+                - courseId
+            properties:
+                courseId:
+                    $ref: "#/components/schemas/ObjectId"
+        EnrollResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                    example: true
+                message:
+                    type: string
+                    example: Enrolled successfully
+        Enrollment:
+            type: object
+            properties:
+                _id:
+                    $ref: "#/components/schemas/ObjectId"
+                userId:
+                    $ref: "#/components/schemas/ObjectId"
+                enrolledCourses:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/EnrolledCourse"
+                totalPrice:
+                    type: number
+                    example: 199.99
+                enrolledOn:
+                    type: string
+                    format: date-time
+                    example: "2026-06-05T12:00:00Z"
+                status:
+                    type: string
+                    example: Enrolled
+        ErrorResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: No enrolled courses
+        ObjectId:
+            type: string
+            pattern: "^[0-9a-fA-F]{24}$"
+            minLength: 24
+            maxLength: 24
+            example: "64a1b2c3d4e5f60012345678"

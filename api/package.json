@@ -3,15 +3,22 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "nodemon index.js"
+        "dev": "nodemon index.js",
+        "debug": "DEBUG=express:* node index.js",
+        "start": "node index.js",
+        "schemathesis": "node ./scripts/run-schemathesis.js",
+        "pretest:fuzz:cache-db": "node ./scripts/cache-mongo-binary.js",
+        "pretest:fuzz:start": "node ./scripts/run-st-test-server.js",
+        "test:unit": "jest --passWithNoTests \\.unit\\.test\\.js$",
+        "test:integration": "jest --passWithNoTests --detectOpenHandles \\.integration\\.test\\.js$",
+        "test:fuzz": "start-server-and-test pretest:fuzz:start http://localhost:4000 schemathesis",
+        "test:all": "npm run test:unit && npm run test:integration && npm run test:fuzz"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "description": "",
     "dependencies": {
-        "axios": "^1.16.0",
         "bcryptjs": "^3.0.3",
         "cors": "^2.8.5",
         "dotenv": "^17.2.1",
@@ -20,5 +27,18 @@
         "mongoose": "^8.18.0",
         "swagger-jsdoc": "^6.3.0",
         "swagger-ui-express": "^5.0.1"
+    },
+    "devDependencies": {
+        "@apidevtools/swagger-parser": "^12.1.0",
+        "jest": "^30.4.2",
+        "jest-junit": "^17.0.0",
+        "jest-openapi": "^0.14.1",
+        "mongodb-memory-server": "^11.2.0",
+        "start-server-and-test": "^3.0.8",
+        "supertest": "^7.2.2",
+        "yamljs": "^0.3.0"
+    },
+    "overrides": {
+        "axios": "^1.7.0"
     }
 }

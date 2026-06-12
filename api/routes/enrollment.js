@@ -1,12 +1,18 @@
-const express = require('express');
-const enrollmentController = require('../controllers/enrollment');
-const auth = require("../auth");
+const express = require("express");
+const enrollmentController = require("../controllers/enrollment");
+const auth = require("../middlewares/auth");
+const { create405Handler } = require("../middlewares/error");
 
-const { verify } = auth;
+const { verifyToken } = auth;
 
 const router = express.Router();
 
-router.post('/enroll', verify, enrollmentController.enroll);
-router.get('/get-enrollments', verify, enrollmentController.getEnrollments);
+router.post("/enroll", verifyToken, enrollmentController.enroll);
+router.get(
+    "/get-enrollments",
+    verifyToken,
+    enrollmentController.getEnrollments,
+);
+router.all("*path", create405Handler(["POST", "GET"]));
 
-module.exports = router; 
+module.exports = router;
