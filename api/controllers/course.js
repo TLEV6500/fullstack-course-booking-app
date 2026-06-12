@@ -1,4 +1,5 @@
 const Course = require("../models/Course");
+const mongoose = require("mongoose");
 
 module.exports.addCourse = async (req, res) => {
     let newCourse = new Course({
@@ -23,16 +24,12 @@ module.exports.addCourse = async (req, res) => {
 };
 
 module.exports.getAllCourses = async (req, res) => {
-    const result = await Course.find({});
-    if (result.length > 0) {
-        return res.status(200).send(result);
-    } else {
-        return res.status(404).send({ message: "No courses found" });
-    }
+    const result = await Course.find({}).lean();
+    return res.status(200).send(result);
 };
 
 module.exports.getAllActive = async (req, res) => {
-    const result = await Course.find({ isActive: true });
+    const result = await Course.find({ isActive: true }).lean();
     if (result.length > 0) {
         return res.status(200).send(result);
     } else {
@@ -44,7 +41,7 @@ module.exports.getCourse = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
         return res.status(400).json({ message: "Invalid course id format." });
     }
-    const course = await Course.findById(req.params.id);
+    const course = await Course.findById(req.params.id).lean();
     if (course) {
         return res.status(200).json(course);
     } else {
@@ -53,11 +50,17 @@ module.exports.getCourse = async (req, res) => {
 };
 
 module.exports.updateCourse = async (req, res) => {
-    let updatedCourse = {
-        name: req.body.name,
-        description: req.body.description,
-        price: req.body.price,
-    };
+    if (!mongoose.Types.ObjectId.isValid(req.params.courseId)) {
+        return res.status(400).json({
+            message:
+                "Invalid course id format. Received: " + req.params.courseId,
+        });
+    }
+    let updatedCourse = {};
+
+    if (req.body.name) updatedCourse.name = req.body.name;
+    if (req.body.description) updatedCourse.description = req.body.description;
+    if (req.body.price) updatedCourse.price = req.body.price;
 
     const course = await Course.findByIdAndUpdate(
         req.params.courseId,
@@ -74,6 +77,9 @@ module.exports.updateCourse = async (req, res) => {
 };
 
 module.exports.archiveCourse = async (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.courseId)) {
+        return res.status(400).json({ message: "Invalid course id format." });
+    }
     let updateActiveField = {
         isActive: false,
     };
@@ -95,6 +101,9 @@ module.exports.archiveCourse = async (req, res) => {
 };
 
 module.exports.activateCourse = async (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.courseId)) {
+        return res.status(400).json({ message: "Invalid course id format." });
+    }
     let updateActiveField = {
         isActive: true,
     };

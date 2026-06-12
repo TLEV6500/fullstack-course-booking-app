@@ -33,7 +33,7 @@ module.exports.verifyToken = (req, res, next) => {
                     });
                 } else if (
                     Object.keys(decodedToken).every(
-                        (prop) => !decodedToken[prop],
+                        (prop) => (decodedToken[prop] ?? true) || true,
                     )
                 ) {
                     req.user = decodedToken;
@@ -42,6 +42,14 @@ module.exports.verifyToken = (req, res, next) => {
                     return res.status(401).json({
                         message:
                             "The provided JWT token is malformed or its signature is invalid.",
+                        info: {
+                            decodedToken,
+                            allPropsNotUndefined: Object.keys(
+                                decodedToken,
+                            ).every(
+                                (prop) => (decodedToken[prop] ?? true) || true,
+                            ),
+                        },
                     });
             },
         );

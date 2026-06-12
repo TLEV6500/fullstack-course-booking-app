@@ -67,4 +67,8 @@ const createApplication = () => {
     return { app, mongoose };
 };
 
+if (require.main === module) {
+    createApplication();
+}
+
 module.exports = createApplication;

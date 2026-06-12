@@ -6,7 +6,7 @@
         "dev": "nodemon index.js",
         "debug": "DEBUG=express:* node index.js",
         "start": "node index.js",
-        "schemathesis": "schemathesis run http://localhost:4000/api-docs.json -H \\\"Authorization: Bearer $AUTH_TOKEN\\\" --report-junit-path=reports/fuzz-report.xml",
+        "schemathesis": "node ./scripts/run-schemathesis.js",
         "pretest:fuzz:cache-db": "node ./scripts/cache-mongo-binary.js",
         "pretest:fuzz:start": "node ./scripts/run-st-test-server.js",
         "test:unit": "jest --passWithNoTests \\.unit\\.test\\.js$",

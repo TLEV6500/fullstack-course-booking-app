@@ -1,6 +1,8 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const auth = require("../middlewares/auth");
+const mongoose = require("mongoose");
+
 module.exports.checkEmailExists = async (req, res) => {
     const result = await User.find({ email: req.body.email });
     const emailExists = result.length > 0;
@@ -89,7 +91,7 @@ module.exports.updateProfile = async (req, res) => {
         userId,
         { firstName, lastName, mobileNo },
         { new: true },
-    );
+    ).lean();
 
     if (!updatedUser) {
         return res.status(404).send({ message: "User not found" });

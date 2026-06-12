@@ -46,18 +46,29 @@ describe("Enrollments routes integration tests", () => {
     let enrollmentId;
 
     test("create a normal user and generate token", async () => {
-        const user = new User({
+        const userDetails = {
             firstName: "Student",
             lastName: "User",
             email: userEmail,
             password: userPassword,
             mobileNo: "09170000002",
             isAdmin: false,
-        });
-        const saved = await user.save();
-        userId = String(saved._id);
-        userToken = auth.createAccessToken(saved);
+        };
+        await request(app).post("/users/register").send(userDetails);
+
+        const loginRes = await request(app)
+            .post("/users/login")
+            .send({ email: userDetails.email, password: userDetails.password });
+        userToken = loginRes.body.access;
+
+        const saved = await request(app)
+            .get("/users/details")
+            .set("Authorization", `Bearer ${userToken}`);
+
+        userId = saved.body._id;
+
         expect(userToken).toBeTruthy();
+        expect(saved.status).toBe(200);
     });
 
     test("create a course to enroll in", async () => {
@@ -76,6 +87,7 @@ describe("Enrollments routes integration tests", () => {
             totalPrice: course.price,
         };
 
+        // console.log("enroll token", userToken);
         const res = await request(app)
             .post("/enrollments/enroll")
             .set("Authorization", `Bearer ${userToken}`)
@@ -88,6 +100,7 @@ describe("Enrollments routes integration tests", () => {
     });
 
     test("GET /enrollments/get-enrollments should return the user's enrollments", async () => {
+        // console.log("Using token: ", userToken);
         const res = await request(app)
             .get("/enrollments/get-enrollments")
             .set("Authorization", `Bearer ${userToken}`);
@@ -95,6 +108,8 @@ describe("Enrollments routes integration tests", () => {
         // Could be multiple enrollments; ensure at least one and it belongs to this user
         if (res.status === 200) {
             expect(Array.isArray(res.body)).toBe(true);
+            // console.log("UserId: ", userId);
+            // console.log("Enrollments:", res.body);
             const found = res.body.find(
                 (e) => String(e.userId) === String(userId),
             );
@@ -106,7 +121,6 @@ describe("Enrollments routes integration tests", () => {
                 ),
             ).toBe(true);
         } else {
-            // Controller may respond 404 if no enrollments found - fail the test then
             throw new Error(`Expected 200 with enrollments, got ${res.status}`);
         }
         expect(res).toSatisfyApiSpec();

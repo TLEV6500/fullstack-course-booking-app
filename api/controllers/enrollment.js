@@ -20,7 +20,7 @@ module.exports.enroll = async (req, res) => {
 };
 
 module.exports.getEnrollments = async (req, res) => {
-    const enrollments = await Enrollment.find({ userId: req.user.id });
+    const enrollments = await Enrollment.find({ userId: req.user.id }).lean();
 
     if (enrollments.length > 0) {
         return res.status(200).send(enrollments);
