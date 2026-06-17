@@ -1,0 +1,32 @@
+services:
+    api:
+        build:
+            context: ./api
+            dockerfile: Dockerfile.prod
+            args:
+                PORT: ${PORT:-5000}
+        environment:
+            - NODE_ENV=production
+            - PORT=${PORT:-5000}
+        ports:
+            - "${PORT:-5000}:${PORT:-5000}"
+        # No volumes here. The code is immutable inside the container.
+        env_file:
+            - .env.prod
+        restart: unless-stopped
+
+    client:
+        build:
+            context: ./client # Corrected from ./api
+            dockerfile: Dockerfile.prod
+            args:
+                VITE_COURSE_BOOKING_API: $VITE_COURSE_BOOKING_API
+        # We don't need the environment variable here at runtime because
+        # Vite baked it into the static HTML/JS during the build stage.
+        ports:
+            - "80:80" # Map to standard HTTP port
+        env_file:
+            - .env.prod
+        restart: unless-stopped
+        depends_on:
+            - api

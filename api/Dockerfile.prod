@@ -1,0 +1,33 @@
+# --- Stage 1: Build (Optional, highly recommended if using TypeScript) ---
+FROM node:20-alpine AS builder
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+# If you are using TypeScript or a bundler for your API, run it here:
+# RUN npm run build
+
+# --- Stage 2: Production Runtime ---
+FROM node:20-alpine
+
+WORKDIR /usr/src/app
+
+# Force Node.js into production mode (disables dev features, caches templates, etc.)
+ENV NODE_ENV=production
+ARG PORT
+ENV PORT=${PORT:-5000}
+
+# Install ONLY production dependencies to keep the image strictly minimal
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+# Copy over the application files (or the compiled /dist folder from Stage 1 if using TS)
+COPY --from=builder /usr/src/app .
+
+# Security: Switch from the default root user to the restricted 'node' user
+USER node
+
+EXPOSE ${PORT:-5000}
+
+# Start the application using standard node, NOT nodemon
+CMD ["npm", "start"]

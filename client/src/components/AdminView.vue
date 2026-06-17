@@ -19,7 +19,9 @@
                 <td>{{ course.description }}</td>
                 <td>{{ course.price }}</td>
                 <td>
-                    <span v-if="course.isActive" class="text-success">Available</span>
+                    <span v-if="course.isActive" class="text-success"
+                        >Available</span
+                    >
                     <span v-else class="text-danger">Unavailable</span>
                 </td>
                 <td>
@@ -34,10 +36,8 @@
 </template>
 
 <script setup>
-    import { defineProps } from "vue";
-
-    const props = defineProps({
-        coursesData: Array,
-    });
+const props = defineProps({
+    coursesData: Array,
+});
 </script>
 <!-- ACTIVITY SOLUTION END -->
