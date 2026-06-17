@@ -1,20 +1,26 @@
-# Use the same Node.js base image
+# client/Dockerfile
+
+# Use the official lightweight Node.js image
 FROM node:20-alpine
 
-# Set the working directory for the client
+ARG VITE_COURSE_BOOKING_API
+
+ENV VITE_COURSE_BOOKING_API=$VITE_COURSE_BOOKING_API
+
+# Set the working directory inside the container
 WORKDIR /usr/src/app
 
-# Copy package files first for caching optimization
+# Copy package files first to leverage Docker's build cache
 COPY package*.json ./
 
-# Install frontend dependencies
+# Install all dependencies
 RUN npm install
 
-# Copy the frontend application files
+# Copy the rest of your application code
 COPY . .
 
-# Expose the port your frontend dev server runs on (Vite defaults to 5173)
+# Expose the port your Express/API server listens on
 EXPOSE 5173
 
-# Start the frontend development server
+# Start the application in development mode (e.g., using nodemon)
 CMD ["npm", "run", "dev"]

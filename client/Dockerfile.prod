@@ -1,17 +1,30 @@
+# --- Stage 1: Build ---
 FROM node:20-alpine AS builder
+
+# Arguments and Environment variables required at BUILD time by Vite
+ARG VITE_COURSE_BOOKING_API
+ENV VITE_COURSE_BOOKING_API=$VITE_COURSE_BOOKING_API
+
 WORKDIR /usr/src/app
+
+# Copy package files and install ALL dependencies (including devDependencies needed for Vite)
 COPY package*.json ./
 RUN npm ci
+
+# Copy the rest of the code and compile the static assets
 COPY . .
-
-# 1. Declare the argument inside the Dockerfile
-ARG VITE_API_URL
-# 2. Assign it as an environment variable for the build command to read
-ENV VITE_API_URL=$VITE_API_URL
-
 RUN npm run build
 
-FROM nginx:alpine AS runner
+# --- Stage 2: Serve ---
+# Use a highly optimized, minimalist Nginx alpine image
+FROM nginx:alpine
+
+# Copy ONLY the compiled static files from Stage 1 into Nginx
+# (Vite outputs to 'dist' by default. If you use standard Create React App, change 'dist' to 'build')
 COPY --from=builder /usr/src/app/dist /usr/share/nginx/html
+
+# Expose standard HTTP port
 EXPOSE 80
+
+# Run Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]

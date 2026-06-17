@@ -14,12 +14,11 @@
 </template>
 
 <script setup>
-    import CourseComponent from '../components/CourseComponent.vue';
-    import { defineProps } from 'vue';
-    import CourseSearch from '../components/CourseSearch.vue';
+import CourseComponent from "../components/CourseComponent.vue";
+import CourseSearch from "../components/CourseSearch.vue";
 
-    const props = defineProps({
-        coursesData: Array
-    });
+const props = defineProps({
+    coursesData: Array,
+});
 </script>
 <!-- ACTIVITY SOLUTION END -->
