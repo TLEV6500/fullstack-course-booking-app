@@ -1,20 +1,20 @@
-const express = require("express");
-const userController = require("../controllers/user");
-const { verifyToken } = require("../middlewares/auth");
-const { create405Handler } = require("../middlewares/error");
-const {
+import express from "express";
+import * as UserController from "../controllers/user.ts";
+import { verifyToken } from "../middlewares/auth.ts";
+import { create405Handler } from "../middlewares/error.ts";
+import {
     validateEmailFormat,
     createTextInputValidator,
     validatePasswordFormat,
     validateMobileNumber,
-} = require("../middlewares/validation");
+} from "../middlewares/validation.ts";
 
 const router = express.Router();
 
 router.post(
     "/check-email",
     validateEmailFormat,
-    userController.checkEmailExists,
+    UserController.checkEmailExists,
 );
 router.post(
     "/register",
@@ -29,7 +29,7 @@ router.post(
     validatePasswordFormat,
     validateEmailFormat,
     validateMobileNumber,
-    userController.registerUser,
+    UserController.registerUser,
 );
 router.post(
     "/login",
@@ -42,14 +42,14 @@ router.post(
     validatePasswordFormat,
     validateEmailFormat,
     validateMobileNumber,
-    userController.loginUser,
+    UserController.loginUser,
 );
-router.get("/details", verifyToken, userController.getProfile);
+router.get("/details", verifyToken, UserController.getProfile);
 router.post(
     "/reset-password",
     validatePasswordFormat,
     verifyToken,
-    userController.resetPassword,
+    UserController.resetPassword,
 );
 router.put(
     "/profile",
@@ -62,8 +62,8 @@ router.put(
     ),
     validateMobileNumber,
     verifyToken,
-    userController.updateProfile,
+    UserController.updateProfile,
 );
 router.all("*path", create405Handler(["POST", "GET", "PUT"]));
 
-module.exports = router;
+export default router;

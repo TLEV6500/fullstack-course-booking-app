@@ -1,9 +1,9 @@
-const User = require("../models/User");
-const bcrypt = require("bcryptjs");
-const auth = require("../middlewares/auth");
-const mongoose = require("mongoose");
+import User from "../models/User.ts";
+import bcrypt from "bcryptjs";
+import * as Auth from "../middlewares/auth.ts";
+import mongoose from "mongoose";
 
-module.exports.checkEmailExists = async (req, res) => {
+export const checkEmailExists = async (req, res) => {
     const result = await User.find({ email: req.body.email });
     const emailExists = result.length > 0;
     return res.status(200).send({
@@ -12,7 +12,7 @@ module.exports.checkEmailExists = async (req, res) => {
     });
 };
 
-module.exports.registerUser = async (req, res) => {
+export const registerUser = async (req, res) => {
     if (req.body.mobileNo.length !== 11) {
         return res.status(400).send({ message: "Mobile number is invalid" });
     } else if (req.body.password.length < 8) {
@@ -36,7 +36,7 @@ module.exports.registerUser = async (req, res) => {
     }
 };
 
-module.exports.loginUser = async (req, res) => {
+export const loginUser = async (req, res) => {
     const result = await User.findOne({ email: req.body.email }).lean();
 
     if (result == null) {
@@ -51,14 +51,14 @@ module.exports.loginUser = async (req, res) => {
     if (isPasswordCorrect) {
         return res.status(200).send({
             message: "User logged in successfully",
-            access: auth.createAccessToken(result),
+            access: Auth.createAccessToken(result),
         });
     }
 
     return res.status(401).send({ message: "Incorrect email or password" });
 };
 
-module.exports.getProfile = async (req, res) => {
+export const getProfile = async (req, res) => {
     const user = await User.findById(req.user.id);
 
     if (!user) {
@@ -69,7 +69,7 @@ module.exports.getProfile = async (req, res) => {
     return res.status(200).send(user);
 };
 
-module.exports.resetPassword = async (req, res) => {
+export const resetPassword = async (req, res) => {
     const { newPassword } = req.body;
     const { id } = req.user;
 
@@ -79,7 +79,7 @@ module.exports.resetPassword = async (req, res) => {
     return res.status(200).send({ message: "Password reset successfully" });
 };
 
-module.exports.updateProfile = async (req, res) => {
+export const updateProfile = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.user.id)) {
         return res.status(400).send({ message: "Invalid user ID" });
     }

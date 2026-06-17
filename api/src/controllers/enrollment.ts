@@ -1,6 +1,6 @@
-const Enrollment = require("../models/Enrollment");
+import Enrollment from "../models/Enrollment.ts";
 
-module.exports.enroll = async (req, res) => {
+export const enroll = async (req, res) => {
     if (req.user.isAdmin) {
         return res.status(403).send({ message: "Admin cannot enroll" });
     }
@@ -19,7 +19,7 @@ module.exports.enroll = async (req, res) => {
     });
 };
 
-module.exports.getEnrollments = async (req, res) => {
+export const getEnrollments = async (req, res) => {
     const enrollments = await Enrollment.find({ userId: req.user.id }).lean();
 
     if (enrollments.length > 0) {

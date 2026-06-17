@@ -1,9 +1,9 @@
-module.exports.logErrors = (err, req, res, next) => {
+export const logErrors = (err, req, res, next) => {
     console.error(err);
     next(err);
 };
 
-module.exports.handleErrors = (err, req, res, next) => {
+export const handleErrors = (err, req, res, next) => {
     if (res.headersSent) {
         return next(err);
     }
@@ -15,7 +15,7 @@ module.exports.handleErrors = (err, req, res, next) => {
     });
 };
 
-module.exports.create405Handler = (supportedMethods, isMiddleware = false) => {
+export const create405Handler = (supportedMethods, isMiddleware = false) => {
     if (!Array.isArray(supportedMethods))
         throw new Error("supportedMethods must be an array");
     return (req, res, next) => {

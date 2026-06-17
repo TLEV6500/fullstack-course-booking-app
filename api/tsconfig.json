@@ -7,7 +7,7 @@
 
         // Environment Settings
         // See also https://aka.ms/tsconfig/module
-        "module": "CommonJS",
+        "module": "NodeNext",
         "esModuleInterop": true,
         "target": "ES2022",
         "types": [],
@@ -15,16 +15,20 @@
         // "lib": ["esnext"],
         // "types": ["node"],
         // and npm install -D @types/node
+        "allowImportingTsExtensions": true,
 
         // Other Outputs
         "sourceMap": true,
         "declaration": true,
         "declarationMap": true,
         "allowJs": true,
+        "moduleResolution": "nodenext",
+        "noEmit": true,
 
         // Stricter Typechecking Options
         "noUncheckedIndexedAccess": true,
         "exactOptionalPropertyTypes": true,
+        "strictNullChecks": true,
 
         // Style Options
         // "noImplicitReturns": true,

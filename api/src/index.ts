@@ -1,16 +1,21 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const swaggerUi = require("swagger-ui-express");
-const userRoutes = require("./routes/user");
-const courseRoutes = require("./routes/course");
-const enrollmentRoutes = require("./routes/enrollment");
-const {
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import swaggerUi from "swagger-ui-express";
+import userRoutes from "./routes/user.ts";
+import courseRoutes from "./routes/course.ts";
+import enrollmentRoutes from "./routes/enrollment.ts";
+import {
     logErrors,
     handleErrors,
     create405Handler,
-} = require("./middlewares/error");
-require("dotenv").config();
+} from "./middlewares/error.ts";
+import "dotenv/config";
+import swaggerSpec from "./config/swagger.ts";
+import { fileURLToPath } from "node:url";
+import process from "node:process";
+
+const isMainModule = fileURLToPath(import.meta.url) === process.argv[1];
 
 const createApplication = () => {
     if (!process.env.ALLOWED_ORIGINS || !process.env.NODE_ENV)
@@ -34,17 +39,17 @@ const createApplication = () => {
     });
 
     let dbURI = process.env.MONGODB_STRING;
+    if (!dbURI) throw new Error("MONGODB_STRING environment variable not set.");
 
     if (process.env.NODE_ENV === "test") {
         dbURI = process.env.MONGODB_STRING_TEST;
     }
 
-    mongoose.connect(dbURI);
+    mongoose.connect(dbURI!);
     mongoose.connection.once("open", () =>
         console.log("Now connected to MongoDB Atlas."),
     );
 
-    const swaggerSpec = require("./swagger");
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
     app.get("/api-docs.json", (req, res) => {
         res.setHeader("Content-Type", "application/json");
@@ -57,7 +62,7 @@ const createApplication = () => {
     app.use(logErrors);
     app.use(handleErrors);
 
-    if (require.main === module) {
+    if (isMainModule) {
         app.listen(process.env.PORT || 3000, () => {
             console.log(
                 `API is now online on port ${process.env.PORT || 3000} in ${process.env.NODE_ENV} mode.`,
@@ -67,8 +72,8 @@ const createApplication = () => {
     return { app, mongoose };
 };
 
-if (require.main === module) {
+if (isMainModule) {
     createApplication();
 }
 
-module.exports = createApplication;
+export default createApplication;
