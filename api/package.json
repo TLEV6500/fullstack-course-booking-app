@@ -1,14 +1,15 @@
 {
     "name": "api",
     "version": "1.0.0",
-    "main": "index.js",
+    "main": "./src/index.ts",
     "scripts": {
-        "dev": "nodemon index.js",
-        "debug": "DEBUG=express:* node index.js",
-        "start": "node index.js",
-        "schemathesis": "node ./scripts/run-schemathesis.js",
-        "pretest:fuzz:cache-db": "node ./scripts/cache-mongo-binary.js",
-        "pretest:fuzz:start": "node ./scripts/run-st-test-server.js",
+        "dev": "nodemon --exec ts-node src/index.ts",
+        "build": "tsc",
+        "debug": "DEBUG=express:* node src/index.ts",
+        "start": "node dist/index.js",
+        "schemathesis": "node ./tests/helpers/run-schemathesis.js",
+        "pretest:fuzz:cache-db": "node ./tests/helpers/cache-mongo-binary.js",
+        "pretest:fuzz:start": "node ./tests/helpers/run-st-test-server.js",
         "test:unit": "jest --passWithNoTests \\.unit\\.test\\.js$",
         "test:integration": "jest --passWithNoTests --detectOpenHandles \\.integration\\.test\\.js$",
         "test:fuzz": "start-server-and-test pretest:fuzz:start http://localhost:4000 schemathesis",
@@ -30,6 +31,8 @@
     },
     "devDependencies": {
         "@apidevtools/swagger-parser": "^12.1.0",
+        "@types/express": "^5.0.6",
+        "@types/node": "^25.9.3",
         "jest": "^30.4.2",
         "jest-junit": "^17.0.0",
         "jest-openapi": "^0.14.1",
@@ -37,6 +40,8 @@
         "nodemon": "^3.1.14",
         "start-server-and-test": "^3.0.8",
         "supertest": "^7.2.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^6.0.3",
         "yamljs": "^0.3.0"
     },
     "overrides": {
