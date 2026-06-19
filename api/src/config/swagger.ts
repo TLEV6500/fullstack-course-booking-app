@@ -1,4 +1,4 @@
-const swaggerJsdoc = require("swagger-jsdoc");
+import swaggerJsdoc, { type OAS3Definition } from "swagger-jsdoc";
 
 const options = {
     definition: {
@@ -33,7 +33,7 @@ function compileModuleSpec({ prefix, files }) {
         apis: files,
     };
 
-    const compiled = swaggerJsdoc(options);
+    const compiled = swaggerJsdoc(options) as unknown as OAS3Definition;
     const prefixedPaths = {};
 
     if (compiled.paths) {
@@ -52,7 +52,7 @@ function compileModuleSpec({ prefix, files }) {
                 /\/+/g,
                 "/",
             );
-            prefixedPaths[fullRoute] = compiled.paths[route];
+            prefixedPaths[fullRoute] = compiled.paths![route];
         });
     }
 
@@ -63,12 +63,17 @@ function compileModuleSpec({ prefix, files }) {
 }
 
 // 3. Process all modules and merge into the main configuration
-const finalSpec = { ...options.definition, paths: {}, components: {} };
+const finalSpec: OAS3Definition = {
+    ...options.definition,
+    paths: {},
+    components: {},
+};
 
 modules.forEach((mod) => {
     const { paths, components } = compileModuleSpec(mod);
 
     // Merge paths
+    if (!finalSpec.paths) finalSpec.paths = {};
     Object.assign(finalSpec.paths, paths);
 
     // Merge components (schemas, securitySchemes, etc.)
@@ -76,13 +81,16 @@ modules.forEach((mod) => {
         finalSpec.components = {
             ...finalSpec.components,
             ...components,
-            schemas: { ...finalSpec.components.schemas, ...components.schemas },
+            schemas: {
+                ...(finalSpec.components?.schemas ?? {}),
+                ...(components.schemas ?? {}),
+            },
             securitySchemes: {
-                ...finalSpec.components.securitySchemes,
-                ...components.securitySchemes,
+                ...(finalSpec.components?.securitySchemes ?? {}),
+                ...(components.securitySchemes ?? {}),
             },
         };
     }
 });
 
-module.exports = finalSpec;
+export default finalSpec;

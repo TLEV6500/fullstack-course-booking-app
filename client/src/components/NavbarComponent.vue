@@ -29,14 +29,12 @@
                         v-if="user.email"
                         >Profile</router-link
                     >
-                    <!-- ACTIVITY SOLUTION START -->
                     <router-link
                         :to="{ name: 'AddCourse' }"
                         class="nav-link"
                         v-if="user.email && user.isAdmin"
                         >Add Course</router-link
                     >
-                    <!-- ACTIVITY SOLUTION END -->
                     <router-link
                         :to="{ name: 'Register' }"
                         class="nav-link"
@@ -61,23 +59,10 @@
     </nav>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onBeforeMount, ref, watch } from "vue";
 
 import { useGlobalStore } from "../stores/global.js";
 
 const { user } = useGlobalStore();
-
-const email = ref("");
-/*
-    onBeforeMount is used just before the component is mounted on the page.
-
-    This means that it will be executed before the component is visible to the user.
-
-    onBeforeMount usually used to fetching initial data from an API or initializing data that will be used by the component.
-  */
-
-// onBeforeMount(() => {
-//   email.value = localStorage.getItem("email");
-// })
 </script>

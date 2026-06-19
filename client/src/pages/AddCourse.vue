@@ -43,7 +43,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onBeforeMount, watch } from "vue";
 import { Notyf } from "notyf";
 import { useRouter } from "vue-router";

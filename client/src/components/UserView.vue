@@ -1,10 +1,8 @@
-<!-- ACTIVITY SOLUTION START -->
 <template>
     <div class="row">
         <div class="col my-5">
             <h1 class="text-center text-primary py-1">Courses Offered</h1>
             <p class="text-center">Select a course to enroll in!</p>
-            <!-- Add CourseSearch component -->
             <CourseSearch />
         </div>
     </div>
@@ -13,12 +11,10 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import CourseComponent from "../components/CourseComponent.vue";
 import CourseSearch from "../components/CourseSearch.vue";
 
-const props = defineProps({
-    coursesData: Array,
-});
+const props = defineProps<{ coursesData: any[] }>();
+const { coursesData } = props;
 </script>
-<!-- ACTIVITY SOLUTION END -->

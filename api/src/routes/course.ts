@@ -1,14 +1,13 @@
-const express = require("express");
-const courseController = require("../controllers/course");
-const auth = require("../middlewares/auth");
-const { create405Handler } = require("../middlewares/error");
-const {
+import express from "express";
+import * as CourseController from "../controllers/course.ts";
+import * as Auth from "../middlewares/auth.ts";
+import { create405Handler } from "../middlewares/error.ts";
+import {
     createTextInputValidator,
     createSearchStringValidator,
-    validateMobileNumber,
-} = require("../middlewares/validation");
+} from "../middlewares/validation.ts";
 
-const { verifyToken, verifyAdmin } = auth;
+const { verifyToken, verifyAdmin } = Auth;
 
 const router = express.Router();
 
@@ -32,13 +31,13 @@ router.post(
     ),
     verifyToken,
     verifyAdmin,
-    courseController.addCourse,
+    CourseController.addCourse,
 );
-router.get("/", courseController.getAllActive);
+router.get("/", CourseController.getAllActive);
 router.all("/", handleOnlyPostAndGet);
 
 // ROUTE: "/all"
-router.get("/all", verifyToken, verifyAdmin, courseController.getAllCourses);
+router.get("/all", verifyToken, verifyAdmin, CourseController.getAllCourses);
 router.all("/all", handleOnlyGet);
 
 // ROUTE: "/search"
@@ -51,12 +50,12 @@ router.post(
         false,
     ),
     createSearchStringValidator("courseName"),
-    courseController.searchCoursesByName,
+    CourseController.searchCoursesByName,
 );
 router.all("/search", handleOnlyPost);
 
 // ROUTE: "/specific/:id"
-router.get("/specific/:id", courseController.getCourse);
+router.get("/specific/:id", CourseController.getCourse);
 router.all("/specific/:id", handleOnlyGet);
 
 // ROUTE: "/:courseId"
@@ -72,7 +71,7 @@ router.patch(
     ),
     verifyToken,
     verifyAdmin,
-    courseController.updateCourse,
+    CourseController.updateCourse,
 );
 router.all("/:courseId", handleOnlyPatch);
 
@@ -81,7 +80,7 @@ router.patch(
     "/:courseId/archive",
     verifyToken,
     verifyAdmin,
-    courseController.archiveCourse,
+    CourseController.archiveCourse,
 );
 router.all("/:courseId/archive", handleOnlyPatch);
 
@@ -90,10 +89,10 @@ router.patch(
     "/:courseId/activate",
     verifyToken,
     verifyAdmin,
-    courseController.activateCourse,
+    CourseController.activateCourse,
 );
 router.all("/:courseId/activate", handleOnlyPatch);
 
 router.all("*path", create405Handler(["POST", "GET", "PATCH"]));
 
-module.exports = router;
+export default router;

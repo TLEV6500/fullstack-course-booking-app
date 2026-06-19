@@ -1,7 +1,7 @@
-const Course = require("../models/Course");
-const mongoose = require("mongoose");
+import Course from "../models/Course.ts";
+import mongoose from "mongoose";
 
-module.exports.addCourse = async (req, res) => {
+export const addCourse = async (req, res) => {
     let newCourse = new Course({
         name: req.body.name,
         description: req.body.description,
@@ -23,12 +23,12 @@ module.exports.addCourse = async (req, res) => {
     });
 };
 
-module.exports.getAllCourses = async (req, res) => {
+export const getAllCourses = async (req, res) => {
     const result = await Course.find({}).lean();
     return res.status(200).send(result);
 };
 
-module.exports.getAllActive = async (req, res) => {
+export const getAllActive = async (req, res) => {
     const result = await Course.find({ isActive: true }).lean();
     if (result.length > 0) {
         return res.status(200).send(result);
@@ -37,7 +37,7 @@ module.exports.getAllActive = async (req, res) => {
     }
 };
 
-module.exports.getCourse = async (req, res) => {
+export const getCourse = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
         return res.status(400).json({ message: "Invalid course id format." });
     }
@@ -49,14 +49,14 @@ module.exports.getCourse = async (req, res) => {
     }
 };
 
-module.exports.updateCourse = async (req, res) => {
+export const updateCourse = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.courseId)) {
         return res.status(400).json({
             message:
                 "Invalid course id format. Received: " + req.params.courseId,
         });
     }
-    let updatedCourse = {};
+    let updatedCourse: Record<string, any> = {};
 
     if (req.body.name) updatedCourse.name = req.body.name;
     if (req.body.description) updatedCourse.description = req.body.description;
@@ -76,7 +76,7 @@ module.exports.updateCourse = async (req, res) => {
     }
 };
 
-module.exports.archiveCourse = async (req, res) => {
+export const archiveCourse = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.courseId)) {
         return res.status(400).json({ message: "Invalid course id format." });
     }
@@ -100,7 +100,7 @@ module.exports.archiveCourse = async (req, res) => {
     }
 };
 
-module.exports.activateCourse = async (req, res) => {
+export const activateCourse = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.courseId)) {
         return res.status(400).json({ message: "Invalid course id format." });
     }
@@ -124,7 +124,7 @@ module.exports.activateCourse = async (req, res) => {
     }
 };
 
-module.exports.searchCoursesByName = async (req, res) => {
+export const searchCoursesByName = async (req, res) => {
     const { courseName } = req.body;
 
     const courses = await Course.find({

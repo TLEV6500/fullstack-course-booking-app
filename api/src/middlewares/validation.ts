@@ -1,11 +1,11 @@
-module.exports.validateEmailFormat = (req, res, next) => {
+export const validateEmailFormat = (req, res, next) => {
     if (!req.body?.email || !req.body.email.includes("@")) {
         return res.status(400).send({ message: "Invalid email format" });
     }
     next();
 };
 
-module.exports.createSearchStringValidator = (searchKey) => {
+export const createSearchStringValidator = (searchKey) => {
     return (req, res, next) => {
         const searchValue = req.query[searchKey] || req.body[searchKey];
         if (searchValue && /^[^\?][a-zA-Z0-9 .,?!-]*$/.test(searchValue)) {
@@ -18,7 +18,7 @@ module.exports.createSearchStringValidator = (searchKey) => {
     };
 };
 
-module.exports.validatePasswordFormat = (req, res, next) => {
+export const validatePasswordFormat = (req, res, next) => {
     if (
         !(req.body?.password && req.body.password.length > 8) &&
         !(req.body?.newPassword && req.body.newPassword.length > 8)
@@ -30,7 +30,7 @@ module.exports.validatePasswordFormat = (req, res, next) => {
     next();
 };
 
-module.exports.validateMobileNumber = (req, res, next) => {
+export const validateMobileNumber = (req, res, next) => {
     const { mobileNo } = req.body;
     if (!mobileNo || !/^(09|\+639)[0-9]{9}$/.test(mobileNo)) {
         return res
@@ -47,7 +47,10 @@ module.exports.validateMobileNumber = (req, res, next) => {
 //     );
 // };
 
-const isValidType = (value, { type = null, required = false } = {}) => {
+export const isValidType = (
+    value,
+    { type = null, required = false }: any = {},
+) => {
     if (value === null || value === undefined) {
         return !required;
     }
@@ -67,13 +70,11 @@ const isValidType = (value, { type = null, required = false } = {}) => {
     }
 };
 
-/**
- *
- * @param {Record<string,{type: "string" | "number" | "boolean", required: boolean}>} inputLabels, where each key is a req.body key and each value is an object with type and required properties
- * @returns
- */
-module.exports.createTextInputValidator = (
-    inputLabels,
+export const createTextInputValidator = (
+    inputLabels: Record<
+        string,
+        { type: "string" | "number" | "boolean"; required: boolean }
+    >,
     rejectAdditionalProps = true,
 ) => {
     if (Object.keys(inputLabels).length == 0)
@@ -81,12 +82,12 @@ module.exports.createTextInputValidator = (
             "First argument to createTextInputValidator must be be an object{string:boolean} with at least one key corresponding to req.body keys",
         );
     const allRequiredLabels = Object.keys(inputLabels).filter(
-        (label) => inputLabels[label].required,
+        (label) => inputLabels[label]!.required,
     );
     return (req, res, next) => {
-        const missingRequiredLabels = [];
+        const missingRequiredLabels: string[] = [];
         for (const label in inputLabels) {
-            if (inputLabels[label].required && req.body[label] === undefined) {
+            if (inputLabels[label]!.required && req.body[label] === undefined) {
                 missingRequiredLabels.push(label);
             }
         }
@@ -96,7 +97,7 @@ module.exports.createTextInputValidator = (
             });
         }
 
-        const invalidLabels = [];
+        const invalidLabels: string[] = [];
         let canProceed = !rejectAdditionalProps;
         for (const [label, value] of Object.entries(req.body)) {
             if (rejectAdditionalProps && !(label in inputLabels)) {

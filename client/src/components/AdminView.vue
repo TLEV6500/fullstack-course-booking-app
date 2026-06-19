@@ -1,4 +1,3 @@
-<!-- ACTIVITY SOLUTION START -->
 <template>
     <h1 class="text-center text-primary mt-5">Admin Dashboard</h1>
     <table class="table table-striped border">
@@ -35,9 +34,8 @@
     </table>
 </template>
 
-<script setup>
-const props = defineProps({
-    coursesData: Array,
-});
+<script setup lang="ts">
+const props = defineProps<{
+    coursesData: any[];
+}>();
 </script>
-<!-- ACTIVITY SOLUTION END -->

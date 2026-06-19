@@ -1,0 +1,43 @@
+{
+    "extends": "@vue/tsconfig/tsconfig.dom.json",
+    "compilerOptions": {
+        /* Target Environment & Module Settings */
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "jsx": "preserve",
+        "jsxImportSource": "vue",
+        "noEmit": true,
+        "allowJs": true,
+        "checkJs": false,
+        "lib": ["DOM", "DOM.Iterable", "ESNext"],
+
+        /* Strict Type-Checking Rules */
+        "strict": false,
+        "isolatedModules": true,
+        "verbatimModuleSyntax": true,
+        "skipLibCheck": true,
+
+        /* Path Aliasing (@/ resolving to /src) */
+        "paths": {
+            "@/*": ["./src/*"]
+        },
+
+        "types": ["node", "pinia"],
+
+        /* Editor Plug-in for Zed IDE Support */
+        "plugins": [
+            {
+                "name": "@vue/typescript-plugin"
+            }
+        ]
+    },
+    "include": [
+        "env.d.ts",
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "src/**/*.vue",
+        "vite.config.ts"
+    ],
+    "exclude": ["node_modules", "dist"]
+}
