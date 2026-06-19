@@ -1,11 +1,11 @@
 {
-    "name": "Course Booking App",
+    "name": "course-booking-app-client",
     "private": true,
     "version": "0.0.0",
     "type": "module",
     "scripts": {
         "dev": "vite --host",
-        "build": "vite build",
+        "build": "vue-tsc --noEmit && vite build",
         "preview": "vite preview"
     },
     "dependencies": {
@@ -18,7 +18,12 @@
         "vue-router": "^5.0.6"
     },
     "devDependencies": {
+        "@types/node": "^25.9.3",
         "@vitejs/plugin-vue": "^6.0.6",
-        "vite": "^8.0.10"
+        "@vue/tsconfig": "^0.9.1",
+        "@vue/typescript-plugin": "^3.3.5",
+        "typescript": "^6.0.3",
+        "vite": "^8.0.10",
+        "vue-tsc": "^3.3.5"
     }
 }

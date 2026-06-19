@@ -1,16 +1,11 @@
-<script setup>
-/* ACTIVITY SOLUTION START */
+<script setup lang="ts">
 import { watch, ref, onBeforeMount } from "vue";
 
 import { Notyf } from "notyf";
 import { useRouter } from "vue-router";
 import { useGlobalStore } from "../stores/global.js";
-/* ACTIVITY SOLUTION END */
 import api from "../api.js";
 
-/*
-	When the input value is updated so will the reactive state it is bound, vice versa
-	*/
 const firstName = ref("");
 const lastName = ref("");
 const mobileNum = ref("");
@@ -21,17 +16,13 @@ const isEnabled = ref(false);
 
 const notyf = new Notyf();
 
-/* ACTIVITY SOLUTION START */
 const router = useRouter();
 
 const { user } = useGlobalStore();
-/* ACTIVITY SOLUTION END */
 
 watch(
     [email, password, confirmPassword, firstName, lastName, mobileNum],
     (currentValue, oldValue) => {
-        // console.log(currentValue);
-
         if (
             currentValue.every((input) => input !== "") &&
             currentValue[1] === currentValue[2]
@@ -45,10 +36,6 @@ watch(
 
 async function handleSubmit(e) {
     e.preventDefault();
-
-    // console.log(email.value);
-    // console.log(password.value);
-    // console.log(confirmPassword.value);
 
     try {
         await api.post("/users/check-email", {
@@ -71,7 +58,7 @@ async function handleSubmit(e) {
             mobileNum.value = "";
             email.value = "";
             password.value = "";
-            confirmPass.value = "";
+            confirmPassword.value = "";
 
             router.push({ path: "/login" });
         } else {
@@ -93,13 +80,11 @@ async function handleSubmit(e) {
     }
 }
 
-/* ACTIVITY SOLUTION START */
 onBeforeMount(() => {
     if (user.email) {
         router.push({ path: "/courses" });
     }
 });
-/* ACTIVITY SOLUTION END */
 </script>
 
 <template>
@@ -141,16 +126,6 @@ onBeforeMount(() => {
                         <label for="emailInput" class="form-label">
                             Email Address
                         </label>
-                        <!-- v-bind:value = allows us to bind the value of this input to an exposed variable -->
-                        <!-- v-on:input is an event listener directive that allow us to run a given function as the user types in an input. -->
-                        <!--
-                            $event - is the event object which contains information about "what happened" in the element. This event object can be passed into the event listener function for processing.
-
-                            $event.target - is the element where the event happened.
-                            $event.target.value - the value of the element where the event happened.
-
-                            email = $event.target.value - update the value of the email state with the current value of the element.
-                        -->
                         <input
                             type="email"
                             class="form-control"
@@ -158,7 +133,6 @@ onBeforeMount(() => {
                             v-model="email"
                         />
                     </div>
-                    <!-- v-model is a directive which also allows for binding the value of an element to an exposed variable. However, v-model also automatically adds the current value of the element into the reactive state upon user input-->
                     <div class="mb-3">
                         <label for="passwordInput" class="form-label">
                             Password
