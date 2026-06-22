@@ -15,3 +15,10 @@ start-docker:
 
 stop-docker:
     docker compose --env-file .env.dev down -v
+
+# Completely purge all node_modules to reset the workspace dependency tree
+clean-deps:
+    rm -rf node_modules
+    rm -rf apps/api/node_modules
+    rm -rf apps/client/node_modules
+    rm -rf .turbo

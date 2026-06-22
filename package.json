@@ -1,0 +1,13 @@
+{
+    "name": "course-booking-app",
+    "author": "Tim Leobert Villacin",
+    "dependencies": {
+        "turbo": "^2.9.18",
+        "zod": "~4.3.4"
+    },
+    "packageManager": "npm@8.5.0",
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ]
+}
