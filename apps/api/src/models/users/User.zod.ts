@@ -57,7 +57,13 @@ export const UpdatePasswordResponse = z.object({
     message: z.string().min(1),
 })
 
+export const GetUserQueryParams = z.object({
+  id: ObjectId.optional(),
+})
+export type GetUserInput = z.infer<typeof GetUserQueryParams>
+
 export const GetUserResponse = User.omit({
     password: true,
     isAdmin: true,
 })
+export type GetUserOutput = z.infer<typeof GetUserResponse>

@@ -26,10 +26,11 @@ export const EnrollmentResponse = z.object({
 })
 export type EnrollmentOutput = z.infer<typeof EnrollmentResponse>
 
+const ExpandUserOrCourseQueryEnum = z.enum(["user", "courses"])
 export const GetEnrollmentQueryParams = z.object({
     limit: z.coerce.number().nonnegative().default(10).optional(),
     offset: z.coerce.number().nonnegative().default(0).optional(),
-    expand: z.enum(["user", "courses"]).optional(),
+    expand: ExpandUserOrCourseQueryEnum.optional(),
 })
 export type GetEnrollmentInput = z.infer<typeof GetEnrollmentQueryParams>
 
@@ -38,11 +39,28 @@ export const GetEnrollmentsBaseResponse = z.object({
 })
 
 export const GetEnrollmentsSimpleResponse = GetEnrollmentsBaseResponse.safeExtend({
+    expanded: z.literal(false),
     userId: Enrollment.shape.userId,
     enrolledCourses: Enrollment.shape.enrolledCourses
 })
 
 export const GetEnrollmentsExpandedResponse = GetEnrollmentsBaseResponse.safeExtend({
-    user: User.optional(),
-    courses: z.array(Course).optional(),
+    expanded: ExpandUserOrCourseQueryEnum,
+    user: User.pick({
+        id: true,
+        firstName: true,
+        lastName: true,
+    }).optional(),
+    courses: z.array(Course.omit({
+        createdOn: true,
+        lastUpdatedOn: true,
+        isActive: true,
+    })).optional(),
 })
+
+export const GetEnrollmentsResponse = z.discriminatedUnion("expanded",[
+    GetEnrollmentsSimpleResponse,
+    GetEnrollmentsExpandedResponse,
+])
+
+export type GetEnrollmentsOutput = z.infer<typeof GetEnrollmentsResponse>
