@@ -1,12 +1,16 @@
 import { defaultEndpointsFactory } from "express-zod-api";
-import { RegisterResponse } from "../../models/users/User.zod.ts";
+import { zUser } from "../../models/users/index.ts";
+import * as UserService from "../../services/user.service.ts";
+import { handleFailure } from "../../errors/common.error.ts";
 
 export const registerUserEndpoint = defaultEndpointsFactory.build({
     method: "post",
-    output: RegisterResponse,
-    handler: async ({input, ctx, logger}) => {
+    input: zUser.RegisterRequest,
+    output: zUser.RegisterResponse,
+    handler: async ({ input, ctx, logger }) => {
+        handleFailure(await UserService.createUser(input), 409)
         return {
-            message: "",
-        }
+            message: "User registered successfully"
+        };
     }
 })

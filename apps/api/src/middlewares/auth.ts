@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import "dotenv/config";
+import { defaultEndpointsFactory } from "express-zod-api";
 
 export const createAccessToken = (user) => {
     const data = {

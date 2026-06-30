@@ -1,13 +1,14 @@
 import { defaultEndpointsFactory } from "express-zod-api";
-import { LoginRequest, LoginResponse } from "../../models/users/User.zod.ts";
+import { zUser } from "../../models/users/index.ts";
+import { loginUser } from "../../services/auth.service.ts";
+import { throwFailureAsHttpError as handleFailure } from "../../errors/common.error.ts";
 
 export const loginUserEndpoint = defaultEndpointsFactory.build({
     method: "post",
-    input: LoginRequest,
-    output: LoginResponse,
+    input: zUser.LoginRequest,
+    output: zUser.LoginResponse,
     handler: async ({input, ctx, logger}) => {
-        return {
-            token: ""
-        }
+        const result = handleFailure(await loginUser(input), 401)
+        return result
     }
 })

@@ -1,5 +1,4 @@
 import * as z from "zod";
-import { ObjectId } from "../misc/ObjectId.ts";
 
 export const User = z.object({
     firstName: z.string().min(1),
@@ -10,7 +9,7 @@ export const User = z.object({
     mobileNo: z.string().regex(/^(09|\+639)[0-9]{9}$/),
     createdOn: z.date(),
     lastUpdatedOn: z.date(),
-    id: ObjectId,
+    id: z.string().min(1),
 })
 
 export type User = z.infer<typeof User>
@@ -21,19 +20,23 @@ export const RegisterRequest = User.omit({
     createdOn: true,
     lastUpdatedOn: true,
 })
+export type RegisterInput = z.infer<typeof RegisterRequest>
 
 export const RegisterResponse = z.object({
     message: z.string().min(1),
 })
+export type RegisterOutput = Omit<User, "password" | "isAdmin">;
 
 export const LoginRequest = User.pick({
     email: true,
     password: true
 })
+export type LoginInput = z.infer<typeof LoginRequest>
 
 export const LoginResponse = z.object({
     token: z.jwt()
 })
+export type LoginOutput = z.infer<typeof LoginResponse>
 
 export const UpdateUserRequest = User.omit({
     id: true,
@@ -42,23 +45,27 @@ export const UpdateUserRequest = User.omit({
     createdOn: true,
     lastUpdatedOn: true,
 })
+export type UpdateUserInput = z.infer<typeof UpdateUserRequest>
 
 export const UpdateUserResponse = User.omit({
     password: true,
     isAdmin: true,
 })
+export type UpdateUserOutput = z.infer<typeof UpdateUserResponse>
 
 export const UpdatePasswordRequest = z.object({
     oldPassword: z.string().min(1),
     newPassword: z.string().min(1),
 })
+export type UpdatePasswordInput = z.infer<typeof UpdatePasswordRequest>
 
 export const UpdatePasswordResponse = z.object({
     message: z.string().min(1),
 })
+export type UpdatePasswordOutput = boolean
 
 export const GetUserQueryParams = z.object({
-  id: ObjectId.optional(),
+  id: z.string().min(1).optional(),
 })
 export type GetUserInput = z.infer<typeof GetUserQueryParams>
 
@@ -67,3 +74,9 @@ export const GetUserResponse = User.omit({
     isAdmin: true,
 })
 export type GetUserOutput = z.infer<typeof GetUserResponse>
+
+export const UserJWTPayload = User.pick({
+    isAdmin: true,
+    id: true
+})
+export type UserJWTPayload = z.infer<typeof UserJWTPayload>
