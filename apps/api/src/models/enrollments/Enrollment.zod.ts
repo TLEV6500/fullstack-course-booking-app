@@ -1,22 +1,21 @@
 import * as z from "zod"
-import { ObjectId } from "../misc/ObjectId.ts"
 import { User } from "../users/User.zod.ts"
 import { Course } from "../courses/Course.zod.ts"
 
 // Note: Convert this User<1:1>Enrollment<1:n>Course relationship to a User<1:n>Enrollment<1:1>Course and User<1:n>Transaction<1:n>Enrollment relationships in the future
 export const Enrollment = z.object({
-    userId: ObjectId,
-    enrolledCourses: z.array(ObjectId),
+    userId: z.string().min(1),
+    enrolledCourses: z.array(z.string().min(1)),
     totalPrice: z.number().nonnegative(),
     enrolledOn: z.date(),
     status: z.string().min(1),
-    id: ObjectId,
+    id: z.string().min(1),
 })
 export type Enrollment = z.infer<typeof Enrollment>
 
 export const EnrollmentRequest = z.object({
-    courseId: z.string(),
-    userId: z.string(),
+    courseId: z.string().min(1),
+    userId: z.string().min(1),
 })
 export type EnrollmentInput = z.infer<typeof EnrollmentRequest>
 

@@ -1,14 +1,29 @@
 import mongoose from "mongoose";
+import type { Enrollment } from "./Enrollment.zod.ts";
+import { SCHEMA_OPTS } from "../mongoose.ts";
 
-const enrollmentSchema = new mongoose.Schema({
+type EnrollmentDocument = Omit<Enrollment, "id" | "userId" | "enrolledCourses"> & {
+    userId: mongoose.Schema.Types.ObjectId;
+    enrolledCourses: {
+        courseId: mongoose.Schema.Types.ObjectId;
+    }[];
+}
+type EnrollmentVirtuals = {
+    id: string;
+}
+type EnrollmentModel = mongoose.Model<EnrollmentDocument, {}, {}, EnrollmentVirtuals>;
+
+const enrollmentSchema = new mongoose.Schema<EnrollmentDocument, EnrollmentModel, {}, {}, EnrollmentVirtuals>({
     userId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
         required: [true, "User ID is Required"],
     },
     enrolledCourses: [
         {
             courseId: {
-                type: String,
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Course",
                 required: [true, "Course ID is Required"],
             },
         },
@@ -25,6 +40,6 @@ const enrollmentSchema = new mongoose.Schema({
         type: String,
         default: "Enrolled",
     },
-});
+}, SCHEMA_OPTS);
 
-export default mongoose.model("Enrollment", enrollmentSchema);
+export default mongoose.model<EnrollmentDocument, EnrollmentModel>("Enrollment", enrollmentSchema);

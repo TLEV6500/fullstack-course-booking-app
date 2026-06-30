@@ -1,5 +1,4 @@
 import * as z from "zod";
-import { ObjectId } from "../misc/ObjectId.ts";
 
 export const Course = z.object({
     name: z.string().min(4),
@@ -8,7 +7,7 @@ export const Course = z.object({
     isActive: z.boolean().default(true),
     createdOn: z.date(),
     lastUpdatedOn: z.date(),
-    id: ObjectId,
+    id: z.string().min(1),
 })
 export type Course = z.infer<typeof Course>
 

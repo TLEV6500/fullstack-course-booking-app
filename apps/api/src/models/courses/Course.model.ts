@@ -1,6 +1,14 @@
 import mongoose from "mongoose";
+import { SCHEMA_OPTS } from "../mongoose.ts";
+import type { Course } from "./Course.zod.ts";
 
-const courseSchema = new mongoose.Schema({
+type CourseDocument = Omit<Course, "id">
+type CourseVirtuals = {
+    id: string;
+}
+type CourseModel = mongoose.Model<CourseDocument, {}, {}, CourseVirtuals>;
+
+const courseSchema = new mongoose.Schema<CourseDocument, CourseModel, {}, {}, CourseVirtuals>({
     name: {
         type: String,
         required: [true, "Course Name is Required"],
@@ -21,6 +29,10 @@ const courseSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
-});
+    lastUpdatedOn: {
+        type: Date,
+        default: Date.now,
+    },
+}, SCHEMA_OPTS);
 
-export default mongoose.model("Course", courseSchema);
+export default mongoose.model<CourseDocument, CourseModel>("Course", courseSchema);
