@@ -12,6 +12,7 @@ const errorMap: ErrorMap = new Map([
 ])
 
 export const deleteCourseEndpoint = authFactory.build({
+    tag: ["Courses"],
     method: "delete",
     input: zCourse.DeleteCoursePathParams,
     output: zCourse.DeleteCourseResponse,

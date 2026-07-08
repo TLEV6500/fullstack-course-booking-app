@@ -12,6 +12,7 @@ const errorMap: ErrorMap = new Map([
 ])
 
 export const updateCourseEndpoint = authFactory.build({
+    tag: ["Courses"],
     method: "patch",
     input: zCourse.UpdateCoursePathParams.and(zCourse.UpdateCourseRequest),
     output: zCourse.UpdateCourseResponse,

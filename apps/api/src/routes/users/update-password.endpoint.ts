@@ -12,6 +12,7 @@ const errorMap: ErrorMap = new Map([
 ]);
 
 export const updatePasswordEndpoint = authFactory.build({
+    tag: ["Users"],
     method: "patch",
     input: UpdatePasswordRequest,
     output: UpdatePasswordResponse,

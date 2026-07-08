@@ -8,7 +8,7 @@ export async function getUser(id: string) {
     const user = await User.findOne({
             _id: id,
             isActive: true
-        });
+    }).select("+isActive");
     if (!user) return new UserNotFoundError({message: "User not found"});
     const userOutput = user.toObject({virtuals: true});
     return userOutput as zUser.GetUserOutput
@@ -16,6 +16,7 @@ export async function getUser(id: string) {
 
 export async function createUser(user: zUser.RegisterInput) {
     try {
+        user.password = await hashPassword(user.password);
         const newUser = new User(user);
         const result = await newUser.save();
         if (!result.id) return new UserCreationFailedError({ message: "Failed to create user" });

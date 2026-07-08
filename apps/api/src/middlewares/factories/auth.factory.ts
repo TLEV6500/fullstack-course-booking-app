@@ -6,10 +6,14 @@ import { UserJWTPayload } from "../../models/users/User.zod.ts";
 import createHttpError from "http-errors";
 
 export const authFactory = defaultEndpointsFactory.addMiddleware({
+    security: {
+        type: "bearer",
+        format: "JWT",
+    },
     handler: async ({ request, logger }) => {
         const authHeader = request.headers.authorization;
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            throw createHttpError(401, "Authorization header is missing or invalid");
+            throw createHttpError(401, "Authorization header is missing or invalid. Format: 'Bearer <token>'");
         }
         const token = authHeader.slice(7);
         try {

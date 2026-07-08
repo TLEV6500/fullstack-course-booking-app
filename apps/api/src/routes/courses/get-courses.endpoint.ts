@@ -11,6 +11,7 @@ const errorMap: ErrorMap = new Map([
 ])
 
 export const getCoursesEndpoint = optionalAuthFactory.build({
+    tag: ["Courses"],
     method: "get",
     input: z.intersection(zCourse.GetCoursesQueryParams, zCourse.GetCoursesPathParams),
     output: zCourse.GetCoursesResponse,

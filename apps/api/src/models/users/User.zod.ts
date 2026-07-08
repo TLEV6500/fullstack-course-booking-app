@@ -18,6 +18,7 @@ export type User = z.infer<typeof User>
 export const RegisterRequest = User.omit({
     id: true,
     isAdmin: true,
+    isActive: true,
     createdOn: true,
     lastUpdatedOn: true,
 })
@@ -39,6 +40,10 @@ export const LoginResponse = z.object({
 })
 export type LoginOutput = z.infer<typeof LoginResponse>
 
+export const UpdateUserPathParams = z.object({
+    id: z.string().min(1),
+})
+
 export const UpdateUserRequest = User.omit({
     id: true,
     isAdmin: true,
@@ -46,7 +51,7 @@ export const UpdateUserRequest = User.omit({
     createdOn: true,
     lastUpdatedOn: true,
 })
-export type UpdateUserInput = z.infer<typeof UpdateUserRequest>
+export type UpdateUserInput = z.infer<typeof UpdateUserRequest> & z.infer<typeof UpdateUserPathParams>
 
 export const UpdateUserResponse = User.omit({
     password: true,
@@ -65,10 +70,10 @@ export const UpdatePasswordResponse = z.object({
 })
 export type UpdatePasswordOutput = boolean
 
-export const GetUserQueryParams = z.object({
+export const GetUserPathParams = z.object({
   id: z.string().min(1).optional(),
 })
-export type GetUserInput = z.infer<typeof GetUserQueryParams>
+export type GetUserInput = z.infer<typeof GetUserPathParams>
 
 export const GetUserResponse = User.omit({
     password: true,

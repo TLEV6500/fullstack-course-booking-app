@@ -10,6 +10,7 @@ const errorMap: ErrorMap = new Map([
 ])
 
 export const getEnrollmentEndpoint = authFactory.build({
+    tag: ["Enrollments"],
     method: "get",
     input: zEnrollment.GetEnrollmentsPathParams.and(zEnrollment.GetEnrollmentQueryParams),
     output: zEnrollment.GetEnrollmentsResponse,

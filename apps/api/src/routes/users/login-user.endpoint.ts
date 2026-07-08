@@ -4,6 +4,7 @@ import { loginUser } from "../../services/auth.service.ts";
 import { throwFailureAsHttpError as handleFailure } from "../../errors/common.error.ts";
 
 export const loginUserEndpoint = defaultEndpointsFactory.build({
+    tag: ["Users"],
     method: "post",
     input: zUser.LoginRequest,
     output: zUser.LoginResponse,

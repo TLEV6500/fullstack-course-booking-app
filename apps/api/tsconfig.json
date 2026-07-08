@@ -10,7 +10,6 @@
         "module": "NodeNext",
         "esModuleInterop": true,
         "target": "ES2022",
-        "types": ["zod-openapi"],
         // For nodejs:
         // "lib": ["esnext"],
         // "types": ["node"],

@@ -4,6 +4,7 @@ import * as UserService from "../../services/user.service.ts";
 import { handleFailure } from "../../errors/common.error.ts";
 
 export const registerUserEndpoint = defaultEndpointsFactory.build({
+    tag: ["Users"],
     method: "post",
     input: zUser.RegisterRequest,
     output: zUser.RegisterResponse,

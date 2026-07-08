@@ -11,6 +11,7 @@ const errorMap: ErrorMap = new Map([
 ])
 
 export const createCoursesEndpoint = authFactory.build({
+    tag: ["Courses"],
     method: "post",
     input: CreateCoursesRequest,
     output: CreateCoursesResponse,
