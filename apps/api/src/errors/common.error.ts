@@ -34,3 +34,8 @@ export function throwFailureAsHttpError<T>(resultOrFailure: T, statusCodeOrError
 }
 
 export const handleFailure = throwFailureAsHttpError
+
+
+export class QueryError<T = null> extends DomainError<T> {}
+
+export class UnauthorizedAccessError<T = null> extends DomainError<T> {}

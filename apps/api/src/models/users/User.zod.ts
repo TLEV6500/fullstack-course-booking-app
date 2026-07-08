@@ -6,6 +6,7 @@ export const User = z.object({
     email: z.email(),
     password: z.string().min(8),
     isAdmin: z.boolean(),
+    isActive: z.boolean(),
     mobileNo: z.string().regex(/^(09|\+639)[0-9]{9}$/),
     createdOn: z.date(),
     lastUpdatedOn: z.date(),
@@ -80,3 +81,13 @@ export const UserJWTPayload = User.pick({
     id: true
 })
 export type UserJWTPayload = z.infer<typeof UserJWTPayload>
+
+export const DeleteUserPathParams = z.object({
+    id: z.string().min(1),
+})
+export type ArchiveUserInput = z.infer<typeof DeleteUserPathParams>
+
+export const ArchiveUserResponse = z.object({
+    message: z.string().min(1),
+})
+export type ArchiveUserOutput = Omit<z.infer<typeof User>, 'password'>

@@ -1,11 +1,21 @@
-import { defaultEndpointsFactory } from "express-zod-api"
-import { GetCoursesQueryParams, GetCoursesResponse } from "../../models/courses/Course.zod.ts"
+import { zCourse } from "../../models/courses/index.ts"
+import * as z from "zod"
+import * as CourseService from "../../services/course.service.ts"
+import { optionalAuthFactory } from "../../middlewares/factories/auth.factory.ts"
+import { handleFailure, UnauthorizedAccessError, type ErrorMap } from "../../errors/common.error.ts"
+import { CourseNotFoundError } from "../../errors/course.error.ts"
 
-export const getCoursesEndpoint = defaultEndpointsFactory.build({
+const errorMap: ErrorMap = new Map([
+    [CourseNotFoundError, 404],
+    [UnauthorizedAccessError, 403]
+])
+
+export const getCoursesEndpoint = optionalAuthFactory.build({
     method: "get",
-    input: GetCoursesQueryParams,
-    output: GetCoursesResponse,
+    input: z.intersection(zCourse.GetCoursesQueryParams, zCourse.GetCoursesPathParams),
+    output: zCourse.GetCoursesResponse,
     handler: async ({input, ctx, logger}) => {
-        return {} as any
+        const result = handleFailure(await CourseService.getCourses(ctx.user?.id ?? "", input), errorMap)
+        return {courses: result}
     }
 })

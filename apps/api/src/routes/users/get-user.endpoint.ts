@@ -1,6 +1,5 @@
 import { zUser } from "../../models/users/index.ts";
 import { getUser } from "../../services/user.service.ts";
-import createHttpError from "http-errors";
 import { authFactory } from "../../middlewares/factories/auth.factory.ts";
 import { handleFailure } from "../../errors/common.error.ts";
 

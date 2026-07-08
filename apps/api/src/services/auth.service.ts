@@ -6,7 +6,7 @@ import { comparePasswords } from "../utils/crypto.ts";
 import { AuthenticationFailedError } from "../errors/user.error.ts";
 
 export async function loginUser(credentials: zUser.LoginInput) {
-    const user = await User.findOne({ where: { email: credentials.email } });
+    const user = await User.findOne({ where: { email: credentials.email } }).select("+password");
     if (!user || !(await comparePasswords(credentials.password, user.password))) {
         return new AuthenticationFailedError<WithNullish<zUser.LoginOutput>>({placeholderValue: {token: null}, message: "Invalid credentials"})
     }

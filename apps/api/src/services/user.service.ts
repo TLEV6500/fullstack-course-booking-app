@@ -2,11 +2,13 @@ import mongoose from "mongoose";
 import { AuthenticationFailedError, UserCreationFailedError, UserNotFoundError, UserUpdateFailedError } from "../errors/user.error.ts";
 import { User, zUser } from "../models/users/index.ts";
 import { comparePasswords, hashPassword } from "../utils/crypto.ts";
-import type { Nullable } from "../utils/types.ts";
 import { DbError } from "../errors/db.error.ts";
 
 export async function getUser(id: string) {
-    const user = await User.findById(id);
+    const user = await User.findOne({
+            _id: id,
+            isActive: true
+        });
     if (!user) return new UserNotFoundError({message: "User not found"});
     const userOutput = user.toObject({virtuals: true});
     return userOutput as zUser.GetUserOutput
@@ -43,10 +45,11 @@ export async function updateUserPassword(id: string, passwords: zUser.UpdatePass
     const user = await User.findById(id);
     if (!user) return new UserNotFoundError({message: "User not found"});
 
-    if (!comparePasswords(passwords.oldPassword, user.password)) return new AuthenticationFailedError({message: "Invalid credentials"});
+    if (!(await comparePasswords(passwords.oldPassword, user.password))) return new AuthenticationFailedError({message: "Invalid credentials"});
 
     const hashedPassword = await hashPassword(passwords.newPassword);
     const updatedUser = await User.findByIdAndUpdate(id, { password: hashedPassword }, { new: true });
+
     if (!updatedUser) return new UserUpdateFailedError({message: "Failed to update password"});
     return !!updatedUser.id as zUser.UpdatePasswordOutput;
 }

@@ -16,7 +16,10 @@ export const GetCoursesQueryParams = z.object({
     limit: z.coerce.number().nonnegative().default(10).optional(),
     offset: z.coerce.number().nonnegative().default(0).optional(),
 })
-export type GetCoursesInput = z.infer<typeof GetCoursesQueryParams>
+export const GetCoursesPathParams = z.object({
+    id: z.string().min(1).optional(),
+})
+export type GetCoursesInput = z.infer<typeof GetCoursesQueryParams & typeof GetCoursesPathParams>
 
 export const GetCoursesResponse = z.object({
     courses: z.array(Course.omit({
@@ -47,10 +50,26 @@ export const UpdateCourseRequest = z.object({
     courseChanges: Course.omit({
         createdOn: true,
         lastUpdatedOn: true,
-        isActive: true,
+        id: true,
     }).partial()
 })
-export type UpdateCourseInput = z.infer<typeof UpdateCourseRequest.shape.courseChanges>
+export const UpdateCoursePathParams = z.object({
+    id: z.string().min(1),
+})
+export type UpdateCourseInput = z.infer<typeof UpdateCourseRequest> & z.infer<typeof UpdateCoursePathParams>
 
-export const UpdateCourseResponse = Course.omit({isActive: true})
-export type UpdateCourseOutput = z.infer<typeof UpdateCourseResponse>
+export const UpdateCourseResponse = z.object({
+    updatedCourse: Course
+})
+export type UpdateCourseOutput = z.infer<typeof UpdateCourseResponse.shape.updatedCourse>
+
+export const DeleteCoursePathParams = z.object({
+    id: z.string().min(1),
+})
+export type DeleteCourseInput = z.infer<typeof DeleteCoursePathParams>
+
+export const DeleteCourseResponse = Course.omit({
+    isActive: true,
+    id: true,
+})
+export type DeleteCourseOutput = z.infer<typeof DeleteCourseResponse>

@@ -1,40 +1,33 @@
 import mongoose from "mongoose";
 import type { Enrollment } from "./Enrollment.zod.ts";
 import { SCHEMA_OPTS } from "../mongoose.ts";
+import type { CourseDocument } from "../courses/Course.model.ts";
+import type { UserDocument } from "../users/User.model.ts";
 
 type EnrollmentDocument = Omit<Enrollment, "id" | "userId" | "enrolledCourses"> & {
-    userId: mongoose.Schema.Types.ObjectId;
-    enrolledCourses: {
-        courseId: mongoose.Schema.Types.ObjectId;
-    }[];
+    userId: mongoose.PopulatedDoc<UserDocument & mongoose.Document, mongoose.Types.ObjectId>;
+    enrolledCourses: mongoose.PopulatedDoc<CourseDocument & mongoose.Document, mongoose.Types.ObjectId>[];
 }
 type EnrollmentVirtuals = {
     id: string;
 }
 type EnrollmentModel = mongoose.Model<EnrollmentDocument, {}, {}, EnrollmentVirtuals>;
 
-const enrollmentSchema = new mongoose.Schema<EnrollmentDocument, EnrollmentModel, {}, {}, EnrollmentVirtuals>({
+const enrollmentSchema = new mongoose.Schema < EnrollmentDocument, EnrollmentModel, { }, { }, EnrollmentVirtuals>({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: [true, "User ID is Required"],
     },
-    enrolledCourses: [
-        {
-            courseId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Course",
-                required: [true, "Course ID is Required"],
-            },
-        },
-    ],
+    enrolledCourses: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "Course",
+        required: [true, "Course ID is Required"],
+        default: [],
+    },
     totalPrice: {
         type: Number,
         required: [true, "totalPrice is Required"],
-    },
-    enrolledOn: {
-        type: Date,
-        default: Date.now,
     },
     status: {
         type: String,

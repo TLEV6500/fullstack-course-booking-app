@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import type { User } from "./User.zod.ts";
 import { SCHEMA_OPTS } from "../mongoose.ts";
 
-type UserDocument = Omit<User, "id">
+export type UserDocument = Omit<User, "id">
 
 type UserVirtuals = {
     id: string;
@@ -32,6 +32,11 @@ const userSchema = new mongoose.Schema<UserDocument, UserModel, {}, {}, UserVirt
     isAdmin: {
         type: Boolean,
         default: false,
+        select: false,
+    },
+    isActive: {
+        type: Boolean,
+        default: true,
         select: false,
     },
     mobileNo: {

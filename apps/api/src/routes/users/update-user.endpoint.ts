@@ -12,7 +12,7 @@ const errorMap: ErrorMap = new Map([
 ])
 
 export const updateUserEndpoint = authFactory.build({
-    method: "put",
+    method: "patch",
     input: UpdateUserRequest,
     output: UpdateUserResponse,
     handler: async ({input, ctx, logger}) => {

@@ -1,10 +1,10 @@
-import { defaultEndpointsFactory } from "express-zod-api"
-import { EnrollmentRequest, EnrollmentResponse } from "../../models/enrollments/Enrollment.zod.ts"
+import { authFactory } from "../../middlewares/factories/auth.factory.ts"
+import { zEnrollment } from "../../models/enrollments/index.ts"
 
-export const enrollCourseEndpoint = defaultEndpointsFactory.build({
+export const enrollCourseEndpoint = authFactory.build({
     method: "post",
-    input: EnrollmentRequest,
-    output: EnrollmentResponse,
+    input: zEnrollment.EnrollmentRequest,
+    output: zEnrollment.EnrollmentResponse,
     handler: async ({input, ctx, logger}) => {
         return {} as any
     }

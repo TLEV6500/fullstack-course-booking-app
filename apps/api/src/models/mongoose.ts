@@ -14,4 +14,8 @@ export const SCHEMA_OPTS = {
         }
     },
     id: true,
+    timestamps: {
+        createdAt: 'createdOn',
+        updatedAt: 'lastUpdatedOn'
+    }
 };

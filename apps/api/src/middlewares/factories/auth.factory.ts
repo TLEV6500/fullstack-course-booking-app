@@ -21,3 +21,20 @@ export const authFactory = defaultEndpointsFactory.addMiddleware({
         }
     }
 })
+
+export const optionalAuthFactory = defaultEndpointsFactory.addMiddleware({
+    handler: async ({ request, logger }) => {
+        const authHeader = request.headers.authorization;
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return {user: null};
+        }
+        const token = authHeader.slice(7);
+        try {
+            const decodedToken = UserJWTPayload.parse(jwt.verify(token, JWT_SECRET_KEY!));
+            logger.debug(`User ${decodedToken.id} authenticated`);
+            return {user: decodedToken};
+        } catch (error) {
+            return {user: null};
+        }
+    }
+})

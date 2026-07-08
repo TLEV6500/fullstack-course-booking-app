@@ -1,11 +1,22 @@
-import { defaultEndpointsFactory } from "express-zod-api"
-import { UpdateCourseRequest } from "../../models/courses/Course.zod.ts"
+import { zCourse } from "../../models/courses/index.ts"
+import { handleFailure, UnauthorizedAccessError, type ErrorMap } from "../../errors/common.error.ts"
+import * as CourseService from "../../services/course.service.ts"
+import { authFactory } from "../../middlewares/factories/auth.factory.ts"
+import { UserNotFoundError } from "../../errors/user.error.ts"
+import { CourseNotFoundError } from "../../errors/course.error.ts"
 
-export const updateCourseEndpoint = defaultEndpointsFactory.build({
-    method: "put",
-    input: UpdateCourseRequest,
-    output: UpdateCourseRequest,
+const errorMap: ErrorMap = new Map([
+    [UserNotFoundError, 401],
+    [UnauthorizedAccessError, 403],
+    [CourseNotFoundError, 404],
+])
+
+export const updateCourseEndpoint = authFactory.build({
+    method: "patch",
+    input: zCourse.UpdateCoursePathParams.and(zCourse.UpdateCourseRequest),
+    output: zCourse.UpdateCourseResponse,
     handler: async ({input, ctx, logger}) => {
-        return {} as any
+        const result = handleFailure(await CourseService.updateCourse(input.id, input, ctx.user.id), errorMap)
+        return {updatedCourse: result}
     },
 })

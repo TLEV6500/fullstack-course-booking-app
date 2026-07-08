@@ -7,9 +7,10 @@ export const Enrollment = z.object({
     userId: z.string().min(1),
     enrolledCourses: z.array(z.string().min(1)),
     totalPrice: z.number().nonnegative(),
-    enrolledOn: z.date(),
     status: z.string().min(1),
     id: z.string().min(1),
+    createdOn: z.date(),
+    lastUpdatedOn: z.date(),
 })
 export type Enrollment = z.infer<typeof Enrollment>
 
@@ -23,15 +24,18 @@ export const EnrollmentResponse = z.object({
     enrollmentId: Enrollment.shape.id,
     userId: Enrollment.shape.userId
 })
-export type EnrollmentOutput = z.infer<typeof EnrollmentResponse>
+export type EnrollmentOutput = Enrollment
 
+export const GetEnrollmentsPathParams = z.object({
+    id: z.string().min(1),
+})
 const ExpandUserOrCourseQueryEnum = z.enum(["user", "courses"])
 export const GetEnrollmentQueryParams = z.object({
     limit: z.coerce.number().nonnegative().default(10).optional(),
     offset: z.coerce.number().nonnegative().default(0).optional(),
     expand: ExpandUserOrCourseQueryEnum.optional(),
 })
-export type GetEnrollmentInput = z.infer<typeof GetEnrollmentQueryParams>
+export type GetEnrollmentInput = z.infer<typeof GetEnrollmentQueryParams> & z.infer<typeof GetEnrollmentsPathParams>
 
 export const GetEnrollmentsBaseResponse = z.object({
     enrollmentId: Enrollment.shape.id,
@@ -63,3 +67,5 @@ export const GetEnrollmentsResponse = z.discriminatedUnion("expanded",[
 ])
 
 export type GetEnrollmentsOutput = z.infer<typeof GetEnrollmentsResponse>
+export type GetEnrollmentsSimpleOutput = z.infer<typeof GetEnrollmentsSimpleResponse>
+export type GetEnrollmentsExpandedOutput = z.infer<typeof GetEnrollmentsExpandedResponse>

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { SCHEMA_OPTS } from "../mongoose.ts";
 import type { Course } from "./Course.zod.ts";
 
-type CourseDocument = Omit<Course, "id">
+export type CourseDocument = Omit<Course, "id">
 type CourseVirtuals = {
     id: string;
 }
@@ -34,5 +34,10 @@ const courseSchema = new mongoose.Schema<CourseDocument, CourseModel, {}, {}, Co
         default: Date.now,
     },
 }, SCHEMA_OPTS);
+
+courseSchema.pre("save", function (next) {
+    this.lastUpdatedOn = new Date();
+    next();
+});
 
 export default mongoose.model<CourseDocument, CourseModel>("Course", courseSchema);
